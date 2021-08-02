@@ -3,14 +3,14 @@ version: '>= 0.14.0'
 formatter: markdown table
 
 content: |-
-  [![Tests](https://github.com/netascode/terraform-aci-scaffolding/actions/workflows/test.yml/badge.svg)](https://github.com/netascode/terraform-aci-scaffolding/actions/workflows/test.yml)
+  [![Tests](https://github.com/netascode/terraform-aci-endpoint-group/actions/workflows/test.yml/badge.svg)](https://github.com/netascode/terraform-aci-endpoint-group/actions/workflows/test.yml)
 
-  # Terraform ACI Scaffolding Module
+  # Terraform ACI Endpoint Group Module
 
-  Description
+  Manages ACI Endpoint Group
 
   Location in GUI:
-  `Tenants` » `XXX`
+  `Tenants` » `XXX` » `Application Profiles` » `XXX` » `Application EPGs`
 
   ## Examples
 

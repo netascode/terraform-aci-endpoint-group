@@ -11,36 +11,53 @@ terraform {
   }
 }
 
+resource "aci_rest" "fvTenant" {
+  dn         = "uni/tn-TF"
+  class_name = "fvTenant"
+}
+
+resource "aci_rest" "fvAp" {
+  dn         = "${aci_rest.fvTenant.id}/ap-AP1"
+  class_name = "fvAp"
+}
+
 module "main" {
   source = "../.."
 
-  name = "ABC"
+  tenant              = aci_rest.fvTenant.content.name
+  application_profile = aci_rest.fvAp.content.name
+  name                = "EPG1"
+  bridge_domain       = "BD1"
 }
 
-data "aci_rest" "fvTenant" {
-  dn = "uni/tn-ABC"
+data "aci_rest" "fvAEPg" {
+  dn = "${aci_rest.fvAp.id}/epg-${module.main.name}"
 
   depends_on = [module.main]
 }
 
-resource "test_assertions" "fvTenant" {
-  component = "fvTenant"
+resource "test_assertions" "fvAEPg" {
+  component = "fvAEPg"
 
   equal "name" {
     description = "name"
-    got         = data.aci_rest.fvTenant.content.name
-    want        = "ABC"
+    got         = data.aci_rest.fvAEPg.content.name
+    want        = module.main.name
   }
+}
 
-  equal "nameAlias" {
-    description = "nameAlias"
-    got         = data.aci_rest.fvTenant.content.nameAlias
-    want        = ""
-  }
+data "aci_rest" "fvRsBd" {
+  dn = "${data.aci_rest.fvAEPg.id}/rsbd"
 
-  equal "descr" {
-    description = "descr"
-    got         = data.aci_rest.fvTenant.content.descr
-    want        = ""
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "fvRsBd" {
+  component = "fvRsBd"
+
+  equal "tnFvBDName" {
+    description = "tnFvBDName"
+    got         = data.aci_rest.fvRsBd.content.tnFvBDName
+    want        = "BD1"
   }
 }
