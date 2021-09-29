@@ -13,17 +13,22 @@ Note that this example will create resources. Resources can be destroyed with `t
 
 ```hcl
 module "aci_endpoint_group" {
-  source = "netascode/endpoint-group/aci"
+  source  = "netascode/endpoint-group/aci"
+  version = ">= 0.0.2"
 
-  tenant              = "ABC"
-  application_profile = "AP1"
-  name                = "EPG1"
-  alias               = "EPG1-ALIAS"
-  description         = "My Description"
-  flood_in_encap      = true
-  intra_epg_isolation = true
-  preferred_group     = true
-  bridge_domain       = "BD1"
+  tenant                      = "ABC"
+  application_profile         = "AP1"
+  name                        = "EPG1"
+  alias                       = "EPG1-ALIAS"
+  description                 = "My Description"
+  flood_in_encap              = true
+  intra_epg_isolation         = true
+  preferred_group             = true
+  bridge_domain               = "BD1"
+  contract_consumers          = ["CON1"]
+  contract_providers          = ["CON1"]
+  contract_imported_consumers = ["I_CON1"]
+  physical_domains            = ["PHY1"]
   subnets = [{
     description        = "Subnet Description"
     ip                 = "1.1.1.1/24"
@@ -33,12 +38,6 @@ module "aci_endpoint_group" {
     nd_ra_prefix       = true
     no_default_gateway = false
   }]
-  contracts = {
-    consumers          = ["CON1"]
-    providers          = ["CON1"]
-    imported_consumers = ["I_CON1"]
-  }
-  physical_domains = ["PHY1"]
   vmware_vmm_domains = [{
     name                 = "VMW1"
     u_segmentation       = true

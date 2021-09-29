@@ -44,7 +44,7 @@ resource "aci_rest" "fvSubnet" {
 }
 
 resource "aci_rest" "fvRsCons" {
-  for_each   = var.contracts.consumers != null ? toset(var.contracts.consumers) : []
+  for_each   = toset(var.contract_consumers)
   dn         = "${aci_rest.fvAEPg.id}/rscons-${each.value}"
   class_name = "fvRsCons"
   content = {
@@ -53,7 +53,7 @@ resource "aci_rest" "fvRsCons" {
 }
 
 resource "aci_rest" "fvRsProv" {
-  for_each   = var.contracts.providers != null ? toset(var.contracts.providers) : []
+  for_each   = toset(var.contract_providers)
   dn         = "${aci_rest.fvAEPg.id}/rsprov-${each.value}"
   class_name = "fvRsProv"
   content = {
@@ -62,7 +62,7 @@ resource "aci_rest" "fvRsProv" {
 }
 
 resource "aci_rest" "fvRsConsIf" {
-  for_each   = var.contracts.imported_consumers != null ? toset(var.contracts.imported_consumers) : []
+  for_each   = toset(var.contract_imported_consumers)
   dn         = "${aci_rest.fvAEPg.id}/rsconsIf-${each.value}"
   class_name = "fvRsConsIf"
   content = {
