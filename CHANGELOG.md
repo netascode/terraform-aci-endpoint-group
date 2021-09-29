@@ -1,4 +1,4 @@
-## 0.0.2 (unreleased)
+## 0.0.2
 
 - BREAKING CHANGE: Refactor contract variables
 
