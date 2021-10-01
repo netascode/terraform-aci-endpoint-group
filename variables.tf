@@ -214,9 +214,9 @@ variable "vmware_vmm_domains" {
 
   validation {
     condition = alltrue([
-      for dom in var.vmware_vmm_domains : dom.custom_epg_name == null || try(can(regex("^[a-zA-Z0-9_.-]{0,64}$", dom.custom_epg_name)))
+      for dom in var.vmware_vmm_domains : dom.custom_epg_name == null || can(regex("^.{0,80}$", dom.custom_epg_name))
     ])
-    error_message = "`custom_epg_name`: Allowed characters: `a`-`z`, `A`-`Z`, `0`-`9`, `_`, `.`, `-`. Maximum characters: 64."
+    error_message = "`custom_epg_name`: Maximum characters: 80."
   }
 }
 
