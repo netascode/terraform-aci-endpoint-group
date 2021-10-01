@@ -1,3 +1,7 @@
+## 0.0.3
+
+- Add custom_epg_name variable
+
 ## 0.0.2
 
 - BREAKING CHANGE: Refactor contract variables
