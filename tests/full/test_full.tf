@@ -58,6 +58,7 @@ module "main" {
     allow_promiscuous    = true
     forged_transmits     = true
     mac_changes          = true
+    custom_epg_name      = "custom-epg-name"
   }]
   static_ports = [{
     node_id              = 101
@@ -428,6 +429,12 @@ resource "test_assertions" "fvRsDomAtt_vmm" {
     description = "switchingMode"
     got         = data.aci_rest.fvRsDomAtt_vmm.content.switchingMode
     want        = "native"
+  }
+
+  equal "customEpgName" {
+    description = "customEpgName"
+    got         = data.aci_rest.fvRsDomAtt_vmm.content.customEpgName
+    want        = "custom-epg-name"
   }
 }
 

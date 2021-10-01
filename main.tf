@@ -160,6 +160,7 @@ resource "aci_rest" "fvRsDomAtt_vmm" {
     instrImedcy   = each.value.deployment_immediacy != null ? each.value.deployment_immediacy : "lazy"
     resImedcy     = each.value.resolution_immediacy != null ? each.value.resolution_immediacy : "immediate"
     switchingMode = "native"
+    customEpgName = each.value.custom_epg_name != null ? each.value.custom_epg_name : ""
   }
 }
 

@@ -166,6 +166,7 @@ variable "vmware_vmm_domains" {
     allow_promiscuous    = optional(bool)
     forged_transmits     = optional(bool)
     mac_changes          = optional(bool)
+    custom_epg_name      = optional(string)
   }))
   default = []
 
@@ -209,6 +210,13 @@ variable "vmware_vmm_domains" {
       for dom in var.vmware_vmm_domains : dom.resolution_immediacy == null || try(contains(["immediate", "lazy", "pre-provision"], dom.resolution_immediacy), false)
     ])
     error_message = "`resolution_immediacy`: Allowed values are `immediate`, `lazy` or `pre-provision`."
+  }
+
+  validation {
+    condition = alltrue([
+      for dom in var.vmware_vmm_domains : dom.custom_epg_name == null || can(regex("^.{0,80}$", dom.custom_epg_name))
+    ])
+    error_message = "`custom_epg_name`: Maximum characters: 80."
   }
 }
 

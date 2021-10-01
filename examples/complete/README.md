@@ -49,6 +49,7 @@ module "aci_endpoint_group" {
     allow_promiscuous    = true
     forged_transmits     = true
     mac_changes          = true
+    custom_epg_name      = "custom-epg-name"
   }]
   static_ports = [{
     node_id              = 101
