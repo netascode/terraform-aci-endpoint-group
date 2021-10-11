@@ -24,7 +24,7 @@ resource "aci_rest" "fvAEPg" {
 }
 
 resource "aci_rest" "fvRsBd" {
-  dn         = "${aci_rest.fvAEPg.id}/rsbd"
+  dn         = "${aci_rest.fvAEPg.dn}/rsbd"
   class_name = "fvRsBd"
   content = {
     tnFvBDName = var.bridge_domain
@@ -33,7 +33,7 @@ resource "aci_rest" "fvRsBd" {
 
 resource "aci_rest" "fvSubnet" {
   for_each   = { for subnet in var.subnets : subnet.ip => subnet }
-  dn         = "${aci_rest.fvAEPg.id}/subnet-[${each.value.ip}]"
+  dn         = "${aci_rest.fvAEPg.dn}/subnet-[${each.value.ip}]"
   class_name = "fvSubnet"
   content = {
     ip    = each.value.ip
@@ -45,7 +45,7 @@ resource "aci_rest" "fvSubnet" {
 
 resource "aci_rest" "fvRsCons" {
   for_each   = toset(var.contract_consumers)
-  dn         = "${aci_rest.fvAEPg.id}/rscons-${each.value}"
+  dn         = "${aci_rest.fvAEPg.dn}/rscons-${each.value}"
   class_name = "fvRsCons"
   content = {
     tnVzBrCPName = each.value
@@ -54,7 +54,7 @@ resource "aci_rest" "fvRsCons" {
 
 resource "aci_rest" "fvRsProv" {
   for_each   = toset(var.contract_providers)
-  dn         = "${aci_rest.fvAEPg.id}/rsprov-${each.value}"
+  dn         = "${aci_rest.fvAEPg.dn}/rsprov-${each.value}"
   class_name = "fvRsProv"
   content = {
     tnVzBrCPName = each.value
@@ -63,7 +63,7 @@ resource "aci_rest" "fvRsProv" {
 
 resource "aci_rest" "fvRsConsIf" {
   for_each   = toset(var.contract_imported_consumers)
-  dn         = "${aci_rest.fvAEPg.id}/rsconsIf-${each.value}"
+  dn         = "${aci_rest.fvAEPg.dn}/rsconsIf-${each.value}"
   class_name = "fvRsConsIf"
   content = {
     tnVzCPIfName = each.value
@@ -72,7 +72,7 @@ resource "aci_rest" "fvRsConsIf" {
 
 resource "aci_rest" "fvRsDomAtt" {
   for_each   = toset(var.physical_domains)
-  dn         = "${aci_rest.fvAEPg.id}/rsdomAtt-[uni/phys-${each.value}]"
+  dn         = "${aci_rest.fvAEPg.dn}/rsdomAtt-[uni/phys-${each.value}]"
   class_name = "fvRsDomAtt"
   content = {
     tDn = "uni/phys-${each.value}"
@@ -81,7 +81,7 @@ resource "aci_rest" "fvRsDomAtt" {
 
 resource "aci_rest" "fvRsPathAtt_port" {
   for_each   = { for sp in var.static_ports : "${sp.node_id}-${sp.port}-vl-${sp.vlan}" => sp if sp.channel == null }
-  dn         = "${aci_rest.fvAEPg.id}/rspathAtt-[${format("topology/pod-%s/paths-%s/pathep-[eth%s/%s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.module != null ? each.value.module : 1, each.value.port)}]"
+  dn         = "${aci_rest.fvAEPg.dn}/rspathAtt-[${format("topology/pod-%s/paths-%s/pathep-[eth%s/%s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.module != null ? each.value.module : 1, each.value.port)}]"
   class_name = "fvRsPathAtt"
   content = {
     tDn         = format("topology/pod-%s/paths-%s/pathep-[eth%s/%s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.module != null ? each.value.module : 1, each.value.port)
@@ -93,7 +93,7 @@ resource "aci_rest" "fvRsPathAtt_port" {
 
 resource "aci_rest" "fvRsPathAtt_channel" {
   for_each   = { for sp in var.static_ports : "${sp.node_id}-${sp.channel}-vl-${sp.vlan}" => sp if sp.channel != null }
-  dn         = "${aci_rest.fvAEPg.id}/rspathAtt-[${format(each.value.node2_id != null ? "topology/pod-%s/protpaths-%s-%s/pathep-[%s]" : "topology/pod-%s/paths-%s/pathep-[%[4]s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.node2_id, each.value.channel)}]"
+  dn         = "${aci_rest.fvAEPg.dn}/rspathAtt-[${format(each.value.node2_id != null ? "topology/pod-%s/protpaths-%s-%s/pathep-[%s]" : "topology/pod-%s/paths-%s/pathep-[%[4]s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.node2_id, each.value.channel)}]"
   class_name = "fvRsPathAtt"
   content = {
     tDn         = format(each.value.node2_id != null ? "topology/pod-%s/protpaths-%s-%s/pathep-[%s]" : "topology/pod-%s/paths-%s/pathep-[%[4]s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.node2_id, each.value.channel)
@@ -105,7 +105,7 @@ resource "aci_rest" "fvRsPathAtt_channel" {
 
 resource "aci_rest" "fvStCEp" {
   for_each   = { for sp_ep in var.static_endpoints : sp_ep.name => sp_ep }
-  dn         = "${aci_rest.fvAEPg.id}/stcep-${each.value.mac}-type-${each.value.type}"
+  dn         = "${aci_rest.fvAEPg.dn}/stcep-${each.value.mac}-type-${each.value.type}"
   class_name = "fvStCEp"
   content = {
     encap     = each.value.type != "vep" ? "vlan-${each.value.vlan}" : "unknown"
@@ -120,7 +120,7 @@ resource "aci_rest" "fvStCEp" {
 
 resource "aci_rest" "fvStIp" {
   for_each   = { for ip in local.additional_ip_list : ip.id => ip }
-  dn         = "${aci_rest.fvStCEp[each.value.name].id}/ip-[${each.value.ip}]"
+  dn         = "${aci_rest.fvStCEp[each.value.name].dn}/ip-[${each.value.ip}]"
   class_name = "fvStIp"
   content = {
     addr = each.value.ip
@@ -129,7 +129,7 @@ resource "aci_rest" "fvStIp" {
 
 resource "aci_rest" "fvRsStCEpToPathEp_port" {
   for_each   = { for sp_ep in var.static_endpoints : sp_ep.name => sp_ep if sp_ep.port != null }
-  dn         = "${aci_rest.fvStCEp[each.value.name].id}/rsstCEpToPathEp-[${format("topology/pod-%s/paths-%s/pathep-[eth%s/%s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.module != null ? each.value.module : 1, each.value.port)}]"
+  dn         = "${aci_rest.fvStCEp[each.value.name].dn}/rsstCEpToPathEp-[${format("topology/pod-%s/paths-%s/pathep-[eth%s/%s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.module != null ? each.value.module : 1, each.value.port)}]"
   class_name = "fvRsStCEpToPathEp"
   content = {
     tDn = format("topology/pod-%s/paths-%s/pathep-[eth%s/%s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.module != null ? each.value.module : 1, each.value.port)
@@ -138,7 +138,7 @@ resource "aci_rest" "fvRsStCEpToPathEp_port" {
 
 resource "aci_rest" "fvRsStCEpToPathEp_channel" {
   for_each   = { for sp_ep in var.static_endpoints : sp_ep.name => sp_ep if sp_ep.channel != null }
-  dn         = "${aci_rest.fvStCEp[each.value.name].id}/rsstCEpToPathEp-[${format(each.value.node2_id != null ? "topology/pod-%s/protpaths-%s-%s/pathep-[%s]" : "topology/pod-%s/paths-%s/pathep-[%[4]s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.node2_id, each.value.channel)}]"
+  dn         = "${aci_rest.fvStCEp[each.value.name].dn}/rsstCEpToPathEp-[${format(each.value.node2_id != null ? "topology/pod-%s/protpaths-%s-%s/pathep-[%s]" : "topology/pod-%s/paths-%s/pathep-[%[4]s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.node2_id, each.value.channel)}]"
   class_name = "fvRsStCEpToPathEp"
   content = {
     tDn = format(each.value.node2_id != null ? "topology/pod-%s/protpaths-%s-%s/pathep-[%s]" : "topology/pod-%s/paths-%s/pathep-[%[4]s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.node2_id, each.value.channel)
@@ -147,7 +147,7 @@ resource "aci_rest" "fvRsStCEpToPathEp_channel" {
 
 resource "aci_rest" "fvRsDomAtt_vmm" {
   for_each   = { for vmm_vwm in var.vmware_vmm_domains : vmm_vwm.name => vmm_vwm }
-  dn         = "${aci_rest.fvAEPg.id}/rsdomAtt-[uni/vmmp-VMware/dom-${each.value.name}]"
+  dn         = "${aci_rest.fvAEPg.dn}/rsdomAtt-[uni/vmmp-VMware/dom-${each.value.name}]"
   class_name = "fvRsDomAtt"
   content = {
     tDn           = "uni/vmmp-VMware/dom-${each.value.name}"
@@ -166,7 +166,7 @@ resource "aci_rest" "fvRsDomAtt_vmm" {
 
 resource "aci_rest" "vmmSecP" {
   for_each   = { for vmm_vwm in var.vmware_vmm_domains : vmm_vwm.name => vmm_vwm }
-  dn         = "${aci_rest.fvRsDomAtt_vmm[each.key].id}/sec"
+  dn         = "${aci_rest.fvRsDomAtt_vmm[each.key].dn}/sec"
   class_name = "vmmSecP"
   content = {
     allowPromiscuous = each.value.allow_promiscuous == true ? "accept" : "reject"
