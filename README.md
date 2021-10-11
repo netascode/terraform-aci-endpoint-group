@@ -20,7 +20,7 @@ module "aci_endpoint_group" {
   name                        = "EPG1"
   alias                       = "EPG1-ALIAS"
   description                 = "My Description"
-  flood_in_encap              = true
+  flood_in_encap              = false
   intra_epg_isolation         = true
   preferred_group             = true
   bridge_domain               = "BD1"

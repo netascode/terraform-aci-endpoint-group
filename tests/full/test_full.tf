@@ -29,7 +29,7 @@ module "main" {
   name                        = "EPG1"
   alias                       = "EPG1-ALIAS"
   description                 = "My Description"
-  flood_in_encap              = true
+  flood_in_encap              = false
   intra_epg_isolation         = true
   preferred_group             = true
   bridge_domain               = "BD1"
@@ -114,7 +114,7 @@ resource "test_assertions" "fvAEPg" {
   equal "floodOnEncap" {
     description = "floodOnEncap"
     got         = data.aci_rest.fvAEPg.content.floodOnEncap
-    want        = "enabled"
+    want        = "disabled"
   }
 
   equal "pcEnfPref" {
