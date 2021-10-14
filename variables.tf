@@ -221,10 +221,12 @@ variable "vmware_vmm_domains" {
 }
 
 variable "static_ports" {
-  description = "List of static ports. Allowed values `node_id`, `node2_id`: `1` - `4000`. Allowed values `vlan`: `1` - `4096`. Allowed values `pod_id`: `1` - `255`. Default value `pod_id`: `1`. Allowed values `port`: `1` - `127`. Allowed values `module`: `1` - `9`. Default value `module`: `1`. Choices `deployment_immediacy`: `immediate`, `lazy`. Default value `deployment_immediacy`: `lazy`. Choices `mode`: `regular`, `native`, `untagged`. Default value `mode`: `regular`."
+  description = "List of static ports. Allowed values `node_id`, `node2_id`: `1` - `4000`. Allowed values `fex_id`, `fex2_id`: `101` - `199`. Allowed values `vlan`: `1` - `4096`. Allowed values `pod_id`: `1` - `255`. Default value `pod_id`: `1`. Allowed values `port`: `1` - `127`. Allowed values `module`: `1` - `9`. Default value `module`: `1`. Choices `deployment_immediacy`: `immediate`, `lazy`. Default value `deployment_immediacy`: `lazy`. Choices `mode`: `regular`, `native`, `untagged`. Default value `mode`: `regular`."
   type = list(object({
     node_id              = number
     node2_id             = optional(number)
+    fex_id               = optional(number)
+    fex2_id              = optional(number)
     vlan                 = number
     pod_id               = optional(number)
     port                 = optional(number)
@@ -247,6 +249,20 @@ variable "static_ports" {
       for sp in var.static_ports : sp.node2_id == null || try(sp.node2_id >= 1 && sp.node2_id <= 4000, false)
     ])
     error_message = "`node2_id`: Minimum value: `1`. Maximum value: `4000`."
+  }
+
+  validation {
+    condition = alltrue([
+      for sp in var.static_ports : sp.fex_id == null || try(sp.fex_id >= 101 && sp.fex_id <= 199, false)
+    ])
+    error_message = "`fex_id`: Minimum value: `101`. Maximum value: `199`."
+  }
+
+  validation {
+    condition = alltrue([
+      for sp in var.static_ports : sp.fex2_id == null || try(sp.fex2_id >= 101 && sp.fex2_id <= 199, false)
+    ])
+    error_message = "`fex2_id`: Minimum value: `101`. Maximum value: `199`."
   }
 
   validation {

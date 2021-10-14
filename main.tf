@@ -80,7 +80,7 @@ resource "aci_rest" "fvRsDomAtt" {
 }
 
 resource "aci_rest" "fvRsPathAtt_port" {
-  for_each   = { for sp in var.static_ports : "${sp.node_id}-${sp.port}-vl-${sp.vlan}" => sp if sp.channel == null }
+  for_each   = { for sp in var.static_ports : "${sp.node_id}-${sp.port}-vl-${sp.vlan}" => sp if sp.channel == null && sp.fex_id == null }
   dn         = "${aci_rest.fvAEPg.dn}/rspathAtt-[${format("topology/pod-%s/paths-%s/pathep-[eth%s/%s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.module != null ? each.value.module : 1, each.value.port)}]"
   class_name = "fvRsPathAtt"
   content = {
@@ -92,11 +92,35 @@ resource "aci_rest" "fvRsPathAtt_port" {
 }
 
 resource "aci_rest" "fvRsPathAtt_channel" {
-  for_each   = { for sp in var.static_ports : "${sp.node_id}-${sp.channel}-vl-${sp.vlan}" => sp if sp.channel != null }
+  for_each   = { for sp in var.static_ports : "${sp.node_id}-${sp.channel}-vl-${sp.vlan}" => sp if sp.channel != null && sp.fex_id == null }
   dn         = "${aci_rest.fvAEPg.dn}/rspathAtt-[${format(each.value.node2_id != null ? "topology/pod-%s/protpaths-%s-%s/pathep-[%s]" : "topology/pod-%s/paths-%s/pathep-[%[4]s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.node2_id, each.value.channel)}]"
   class_name = "fvRsPathAtt"
   content = {
     tDn         = format(each.value.node2_id != null ? "topology/pod-%s/protpaths-%s-%s/pathep-[%s]" : "topology/pod-%s/paths-%s/pathep-[%[4]s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.node2_id, each.value.channel)
+    encap       = "vlan-${each.value.vlan}"
+    mode        = each.value.mode != null ? each.value.mode : "regular"
+    instrImedcy = each.value.deployment_immediacy != null ? each.value.deployment_immediacy : "lazy"
+  }
+}
+
+resource "aci_rest" "fvRsPathAtt_fex_port" {
+  for_each   = { for sp in var.static_ports : "${sp.node_id}-${sp.fex_id}-${sp.port}-vl-${sp.vlan}" => sp if sp.channel == null && sp.fex_id != null }
+  dn         = "${aci_rest.fvAEPg.dn}/rspathAtt-[${format("topology/pod-%s/paths-%s/extpaths-%s/pathep-[eth%s/%s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.fex_id, each.value.module != null ? each.value.module : 1, each.value.port)}]"
+  class_name = "fvRsPathAtt"
+  content = {
+    tDn         = format("topology/pod-%s/paths-%s/extpaths-%s/pathep-[eth%s/%s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.fex_id, each.value.module != null ? each.value.module : 1, each.value.port)
+    encap       = "vlan-${each.value.vlan}"
+    mode        = each.value.mode != null ? each.value.mode : "regular"
+    instrImedcy = each.value.deployment_immediacy != null ? each.value.deployment_immediacy : "lazy"
+  }
+}
+
+resource "aci_rest" "fvRsPathAtt_fex_channel" {
+  for_each   = { for sp in var.static_ports : "${sp.node_id}-${sp.fex_id}-${sp.channel}-vl-${sp.vlan}" => sp if sp.channel != null && sp.fex_id != null }
+  dn         = "${aci_rest.fvAEPg.dn}/rspathAtt-[${format(each.value.node2_id != null && each.value.fex2_id != null ? "topology/pod-%s/protpaths-%s-%s/extprotpaths-%s-%s/pathep-[%s]" : "topology/pod-%s/paths-%s/extpaths-%[4]s/pathep-[%[6]s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.node2_id, each.value.fex_id, each.value.fex2_id, each.value.channel)}]"
+  class_name = "fvRsPathAtt"
+  content = {
+    tDn         = format(each.value.node2_id != null && each.value.fex2_id != null ? "topology/pod-%s/protpaths-%s-%s/extprotpaths-%s-%s/pathep-[%s]" : "topology/pod-%s/paths-%s/extpaths-%[4]s/pathep-[%[6]s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.node2_id, each.value.fex_id, each.value.fex2_id, each.value.channel)
     encap       = "vlan-${each.value.vlan}"
     mode        = each.value.mode != null ? each.value.mode : "regular"
     instrImedcy = each.value.deployment_immediacy != null ? each.value.deployment_immediacy : "lazy"
