@@ -246,23 +246,23 @@ variable "static_ports" {
 
   validation {
     condition = alltrue([
-      for sp in var.static_ports : sp.node2_id == null || can(sp.node2_id >= 1 && sp.node2_id <= 4000)
+      for sp in var.static_ports : sp.node2_id == null || try(sp.node2_id >= 1 && sp.node2_id <= 4000, false)
     ])
     error_message = "`node2_id`: Minimum value: `1`. Maximum value: `4000`."
   }
 
   validation {
     condition = alltrue([
-      for sp in var.static_ports : sp.fex_id == null || can(sp.fex_id >= 101 && sp.fex_id <= 199)
+      for sp in var.static_ports : sp.fex_id == null || try(sp.fex_id >= 101 && sp.fex_id <= 199, false)
     ])
-    error_message = "`node_id`: Minimum value: `101`. Maximum value: `199`."
+    error_message = "`fex_id`: Minimum value: `101`. Maximum value: `199`."
   }
 
   validation {
     condition = alltrue([
-      for sp in var.static_ports : sp.fex2_id == null || can(sp.fex2_id >= 101 && sp.fex2_id <= 199)
+      for sp in var.static_ports : sp.fex2_id == null || try(sp.fex2_id >= 101 && sp.fex2_id <= 199, false)
     ])
-    error_message = "`node2_id`: Minimum value: `101`. Maximum value: `199`."
+    error_message = "`fex2_id`: Minimum value: `101`. Maximum value: `199`."
   }
 
   validation {
