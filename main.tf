@@ -104,8 +104,7 @@ resource "aci_rest" "fvRsPathAtt_channel" {
 }
 
 resource "aci_rest" "fvRsPathAtt_fex_port" {
-  for_each = { for sp in var.static_ports : "${sp.node_id}-${sp.fex_id}-${sp.port}-vl-${sp.vlan}" => sp if sp.channel == null && sp.fex_id != null }
-  # [topology/pod-1/paths-103/extpaths-151/pathep-[eth1/3]]",
+  for_each   = { for sp in var.static_ports : "${sp.node_id}-${sp.fex_id}-${sp.port}-vl-${sp.vlan}" => sp if sp.channel == null && sp.fex_id != null }
   dn         = "${aci_rest.fvAEPg.dn}/rspathAtt-[${format("topology/pod-%s/paths-%s/extpaths-%s/pathep-[eth%s/%s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.fex_id, each.value.module != null ? each.value.module : 1, each.value.port)}]"
   class_name = "fvRsPathAtt"
   content = {
@@ -117,9 +116,8 @@ resource "aci_rest" "fvRsPathAtt_fex_port" {
 }
 
 resource "aci_rest" "fvRsPathAtt_fex_channel" {
-  for_each = { for sp in var.static_ports : "${sp.node_id}-${sp.fex_id}-${sp.channel}-vl-${sp.vlan}" => sp if sp.channel != null && sp.fex_id != null }
-  dn       = "${aci_rest.fvAEPg.dn}/rspathAtt-[${format(each.value.node2_id != null && each.value.fex2_id != null ? "topology/pod-%s/protpaths-%s-%s/extprotpaths-%s-%s/pathep-[%s]" : "topology/pod-%s/paths-%s/extpaths-%[4]s/pathep-[%[6]s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.node2_id, each.value.fex_id, each.value.fex2_id, each.value.channel)}]"
-  # topology/pod-1/protpaths-103-104/extprotpaths-151-152/pathep-[TEST]
+  for_each   = { for sp in var.static_ports : "${sp.node_id}-${sp.fex_id}-${sp.channel}-vl-${sp.vlan}" => sp if sp.channel != null && sp.fex_id != null }
+  dn         = "${aci_rest.fvAEPg.dn}/rspathAtt-[${format(each.value.node2_id != null && each.value.fex2_id != null ? "topology/pod-%s/protpaths-%s-%s/extprotpaths-%s-%s/pathep-[%s]" : "topology/pod-%s/paths-%s/extpaths-%[4]s/pathep-[%[6]s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.node2_id, each.value.fex_id, each.value.fex2_id, each.value.channel)}]"
   class_name = "fvRsPathAtt"
   content = {
     tDn         = format(each.value.node2_id != null && each.value.fex2_id != null ? "topology/pod-%s/protpaths-%s-%s/extprotpaths-%s-%s/pathep-[%s]" : "topology/pod-%s/paths-%s/extpaths-%[4]s/pathep-[%[6]s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.node2_id, each.value.fex_id, each.value.fex2_id, each.value.channel)
