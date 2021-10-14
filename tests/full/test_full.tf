@@ -68,6 +68,26 @@ module "main" {
     module               = 1
     deployment_immediacy = "lazy"
     mode                 = "untagged"
+    },
+    {
+      node_id  = 101
+      node2_id = 102
+      fex_id   = 151
+      fex2_id  = 152
+      vlan     = 2
+      channel  = "ipg_vpc_test"
+    },
+    {
+      node_id = 101
+      fex_id  = 151
+      vlan    = 2
+      channel = "ipg_regular-po_test"
+    },
+    {
+      node_id = 101
+      fex_id  = 151
+      port    = 1
+      vlan    = 2
   }]
   static_endpoints = [{
     name           = "EP1"
