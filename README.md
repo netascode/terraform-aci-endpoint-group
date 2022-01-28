@@ -13,7 +13,7 @@ Location in GUI:
 ```hcl
 module "aci_endpoint_group" {
   source  = "netascode/endpoint-group/aci"
-  version = ">= 0.0.2"
+  version = ">= 0.1.0"
 
   tenant                      = "ABC"
   application_profile         = "AP1"
@@ -93,7 +93,6 @@ module "aci_endpoint_group" {
     additional_ips = ["1.1.1.11"]
   }]
 }
-
 ```
 
 ## Requirements
@@ -101,13 +100,13 @@ module "aci_endpoint_group" {
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
-| <a name="requirement_aci"></a> [aci](#requirement\_aci) | >= 0.2.0 |
+| <a name="requirement_aci"></a> [aci](#requirement\_aci) | >= 2.0.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aci"></a> [aci](#provider\_aci) | >= 0.2.0 |
+| <a name="provider_aci"></a> [aci](#provider\_aci) | >= 2.0.0 |
 
 ## Inputs
 
@@ -142,21 +141,21 @@ module "aci_endpoint_group" {
 
 | Name | Type |
 |------|------|
-| [aci_rest.fvAEPg](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
-| [aci_rest.fvRsBd](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
-| [aci_rest.fvRsCons](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
-| [aci_rest.fvRsConsIf](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
-| [aci_rest.fvRsDomAtt](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
-| [aci_rest.fvRsDomAtt_vmm](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
-| [aci_rest.fvRsPathAtt_channel](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
-| [aci_rest.fvRsPathAtt_fex_channel](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
-| [aci_rest.fvRsPathAtt_fex_port](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
-| [aci_rest.fvRsPathAtt_port](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
-| [aci_rest.fvRsProv](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
-| [aci_rest.fvRsStCEpToPathEp_channel](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
-| [aci_rest.fvRsStCEpToPathEp_port](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
-| [aci_rest.fvStCEp](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
-| [aci_rest.fvStIp](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
-| [aci_rest.fvSubnet](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
-| [aci_rest.vmmSecP](https://registry.terraform.io/providers/netascode/aci/latest/docs/resources/rest) | resource |
+| [aci_rest_managed.fvAEPg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
+| [aci_rest_managed.fvRsBd](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
+| [aci_rest_managed.fvRsCons](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
+| [aci_rest_managed.fvRsConsIf](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
+| [aci_rest_managed.fvRsDomAtt](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
+| [aci_rest_managed.fvRsDomAtt_vmm](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
+| [aci_rest_managed.fvRsPathAtt_channel](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
+| [aci_rest_managed.fvRsPathAtt_fex_channel](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
+| [aci_rest_managed.fvRsPathAtt_fex_port](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
+| [aci_rest_managed.fvRsPathAtt_port](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
+| [aci_rest_managed.fvRsProv](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
+| [aci_rest_managed.fvRsStCEpToPathEp_channel](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
+| [aci_rest_managed.fvRsStCEpToPathEp_port](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
+| [aci_rest_managed.fvStCEp](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
+| [aci_rest_managed.fvStIp](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
+| [aci_rest_managed.fvSubnet](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
+| [aci_rest_managed.vmmSecP](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
 <!-- END_TF_DOCS -->

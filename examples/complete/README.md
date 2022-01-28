@@ -14,7 +14,7 @@ Note that this example will create resources. Resources can be destroyed with `t
 ```hcl
 module "aci_endpoint_group" {
   source  = "netascode/endpoint-group/aci"
-  version = ">= 0.0.2"
+  version = ">= 0.1.0"
 
   tenant                      = "ABC"
   application_profile         = "AP1"
@@ -94,6 +94,5 @@ module "aci_endpoint_group" {
     additional_ips = ["1.1.1.11"]
   }]
 }
-
 ```
 <!-- END_TF_DOCS -->

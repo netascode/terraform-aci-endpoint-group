@@ -5,27 +5,27 @@ terraform {
     }
 
     aci = {
-      source  = "netascode/aci"
-      version = ">=0.2.0"
+      source  = "CiscoDevNet/aci"
+      version = ">=2.0.0"
     }
   }
 }
 
-resource "aci_rest" "fvTenant" {
+resource "aci_rest_managed" "fvTenant" {
   dn         = "uni/tn-TF"
   class_name = "fvTenant"
 }
 
-resource "aci_rest" "fvAp" {
-  dn         = "${aci_rest.fvTenant.id}/ap-AP1"
+resource "aci_rest_managed" "fvAp" {
+  dn         = "${aci_rest_managed.fvTenant.id}/ap-AP1"
   class_name = "fvAp"
 }
 
 module "main" {
   source = "../.."
 
-  tenant                      = aci_rest.fvTenant.content.name
-  application_profile         = aci_rest.fvAp.content.name
+  tenant                      = aci_rest_managed.fvTenant.content.name
+  application_profile         = aci_rest_managed.fvAp.content.name
   name                        = "EPG1"
   alias                       = "EPG1-ALIAS"
   description                 = "My Description"
@@ -104,8 +104,8 @@ module "main" {
   }]
 }
 
-data "aci_rest" "fvAEPg" {
-  dn = "${aci_rest.fvAp.id}/epg-${module.main.name}"
+data "aci_rest_managed" "fvAEPg" {
+  dn = "${aci_rest_managed.fvAp.id}/epg-${module.main.name}"
 
   depends_on = [module.main]
 }
@@ -115,43 +115,43 @@ resource "test_assertions" "fvAEPg" {
 
   equal "name" {
     description = "name"
-    got         = data.aci_rest.fvAEPg.content.name
+    got         = data.aci_rest_managed.fvAEPg.content.name
     want        = module.main.name
   }
 
   equal "nameAlias" {
     description = "nameAlias"
-    got         = data.aci_rest.fvAEPg.content.nameAlias
+    got         = data.aci_rest_managed.fvAEPg.content.nameAlias
     want        = "EPG1-ALIAS"
   }
 
   equal "descr" {
     description = "descr"
-    got         = data.aci_rest.fvAEPg.content.descr
+    got         = data.aci_rest_managed.fvAEPg.content.descr
     want        = "My Description"
   }
 
   equal "floodOnEncap" {
     description = "floodOnEncap"
-    got         = data.aci_rest.fvAEPg.content.floodOnEncap
+    got         = data.aci_rest_managed.fvAEPg.content.floodOnEncap
     want        = "disabled"
   }
 
   equal "pcEnfPref" {
     description = "pcEnfPref"
-    got         = data.aci_rest.fvAEPg.content.pcEnfPref
+    got         = data.aci_rest_managed.fvAEPg.content.pcEnfPref
     want        = "enforced"
   }
 
   equal "prefGrMemb" {
     description = "prefGrMemb"
-    got         = data.aci_rest.fvAEPg.content.prefGrMemb
+    got         = data.aci_rest_managed.fvAEPg.content.prefGrMemb
     want        = "include"
   }
 }
 
-data "aci_rest" "fvRsBd" {
-  dn = "${data.aci_rest.fvAEPg.id}/rsbd"
+data "aci_rest_managed" "fvRsBd" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/rsbd"
 
   depends_on = [module.main]
 }
@@ -161,13 +161,13 @@ resource "test_assertions" "fvRsBd" {
 
   equal "tnFvBDName" {
     description = "tnFvBDName"
-    got         = data.aci_rest.fvRsBd.content.tnFvBDName
+    got         = data.aci_rest_managed.fvRsBd.content.tnFvBDName
     want        = "BD1"
   }
 }
 
-data "aci_rest" "fvSubnet" {
-  dn = "${data.aci_rest.fvAEPg.id}/subnet-[1.1.1.1/24]"
+data "aci_rest_managed" "fvSubnet" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/subnet-[1.1.1.1/24]"
 
   depends_on = [module.main]
 }
@@ -177,31 +177,31 @@ resource "test_assertions" "fvSubnet" {
 
   equal "ip" {
     description = "ip"
-    got         = data.aci_rest.fvSubnet.content.ip
+    got         = data.aci_rest_managed.fvSubnet.content.ip
     want        = "1.1.1.1/24"
   }
 
   equal "descr" {
     description = "descr"
-    got         = data.aci_rest.fvSubnet.content.descr
+    got         = data.aci_rest_managed.fvSubnet.content.descr
     want        = "Subnet Description"
   }
 
   equal "ctrl" {
     description = "ctrl"
-    got         = data.aci_rest.fvSubnet.content.ctrl
+    got         = data.aci_rest_managed.fvSubnet.content.ctrl
     want        = "nd,querier"
   }
 
   equal "scope" {
     description = "scope"
-    got         = data.aci_rest.fvSubnet.content.scope
+    got         = data.aci_rest_managed.fvSubnet.content.scope
     want        = "public,shared"
   }
 }
 
-data "aci_rest" "fvRsCons" {
-  dn = "${data.aci_rest.fvAEPg.id}/rscons-CON1"
+data "aci_rest_managed" "fvRsCons" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/rscons-CON1"
 
   depends_on = [module.main]
 }
@@ -211,13 +211,13 @@ resource "test_assertions" "fvRsCons" {
 
   equal "tnVzBrCPName" {
     description = "tnVzBrCPName"
-    got         = data.aci_rest.fvRsCons.content.tnVzBrCPName
+    got         = data.aci_rest_managed.fvRsCons.content.tnVzBrCPName
     want        = "CON1"
   }
 }
 
-data "aci_rest" "fvRsProv" {
-  dn = "${data.aci_rest.fvAEPg.id}/rsprov-CON1"
+data "aci_rest_managed" "fvRsProv" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/rsprov-CON1"
 
   depends_on = [module.main]
 }
@@ -227,13 +227,13 @@ resource "test_assertions" "fvRsProv" {
 
   equal "tnVzBrCPName" {
     description = "tnVzBrCPName"
-    got         = data.aci_rest.fvRsProv.content.tnVzBrCPName
+    got         = data.aci_rest_managed.fvRsProv.content.tnVzBrCPName
     want        = "CON1"
   }
 }
 
-data "aci_rest" "fvRsConsIf" {
-  dn = "${data.aci_rest.fvAEPg.id}/rsconsIf-I_CON1"
+data "aci_rest_managed" "fvRsConsIf" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/rsconsIf-I_CON1"
 
   depends_on = [module.main]
 }
@@ -243,13 +243,13 @@ resource "test_assertions" "fvRsConsIf" {
 
   equal "tnVzCPIfName" {
     description = "tnVzCPIfName"
-    got         = data.aci_rest.fvRsConsIf.content.tnVzCPIfName
+    got         = data.aci_rest_managed.fvRsConsIf.content.tnVzCPIfName
     want        = "I_CON1"
   }
 }
 
-data "aci_rest" "fvRsDomAtt" {
-  dn = "${data.aci_rest.fvAEPg.id}/rsdomAtt-[uni/phys-PHY1]"
+data "aci_rest_managed" "fvRsDomAtt" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/rsdomAtt-[uni/phys-PHY1]"
 
   depends_on = [module.main]
 }
@@ -259,13 +259,13 @@ resource "test_assertions" "fvRsDomAtt" {
 
   equal "tDn" {
     description = "tDn"
-    got         = data.aci_rest.fvRsDomAtt.content.tDn
+    got         = data.aci_rest_managed.fvRsDomAtt.content.tDn
     want        = "uni/phys-PHY1"
   }
 }
 
-data "aci_rest" "fvRsPathAtt" {
-  dn = "${data.aci_rest.fvAEPg.id}/rspathAtt-[topology/pod-1/paths-101/pathep-[eth1/10]]"
+data "aci_rest_managed" "fvRsPathAtt" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/rspathAtt-[topology/pod-1/paths-101/pathep-[eth1/10]]"
 
   depends_on = [module.main]
 }
@@ -275,31 +275,31 @@ resource "test_assertions" "fvRsPathAtt" {
 
   equal "tDn" {
     description = "tDn"
-    got         = data.aci_rest.fvRsPathAtt.content.tDn
+    got         = data.aci_rest_managed.fvRsPathAtt.content.tDn
     want        = "topology/pod-1/paths-101/pathep-[eth1/10]"
   }
 
   equal "encap" {
     description = "encap"
-    got         = data.aci_rest.fvRsPathAtt.content.encap
+    got         = data.aci_rest_managed.fvRsPathAtt.content.encap
     want        = "vlan-123"
   }
 
   equal "mode" {
     description = "mode"
-    got         = data.aci_rest.fvRsPathAtt.content.mode
+    got         = data.aci_rest_managed.fvRsPathAtt.content.mode
     want        = "untagged"
   }
 
   equal "instrImedcy" {
     description = "instrImedcy"
-    got         = data.aci_rest.fvRsPathAtt.content.instrImedcy
+    got         = data.aci_rest_managed.fvRsPathAtt.content.instrImedcy
     want        = "lazy"
   }
 }
 
-data "aci_rest" "fvStCEp" {
-  dn = "${data.aci_rest.fvAEPg.id}/stcep-11:11:11:11:11:11-type-silent-host"
+data "aci_rest_managed" "fvStCEp" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/stcep-11:11:11:11:11:11-type-silent-host"
 
   depends_on = [module.main]
 }
@@ -309,49 +309,49 @@ resource "test_assertions" "fvStCEp" {
 
   equal "encap" {
     description = "encap"
-    got         = data.aci_rest.fvStCEp.content.encap
+    got         = data.aci_rest_managed.fvStCEp.content.encap
     want        = "vlan-123"
   }
 
   equal "id" {
     description = "id"
-    got         = data.aci_rest.fvStCEp.content.id
+    got         = data.aci_rest_managed.fvStCEp.content.id
     want        = "0"
   }
 
   equal "ip" {
     description = "ip"
-    got         = data.aci_rest.fvStCEp.content.ip
+    got         = data.aci_rest_managed.fvStCEp.content.ip
     want        = "1.1.1.10"
   }
 
   equal "mac" {
     description = "mac"
-    got         = data.aci_rest.fvStCEp.content.mac
+    got         = data.aci_rest_managed.fvStCEp.content.mac
     want        = "11:11:11:11:11:11"
   }
 
   equal "name" {
     description = "name"
-    got         = data.aci_rest.fvStCEp.content.name
+    got         = data.aci_rest_managed.fvStCEp.content.name
     want        = "EP1"
   }
 
   equal "nameAlias" {
     description = "nameAlias"
-    got         = data.aci_rest.fvStCEp.content.nameAlias
+    got         = data.aci_rest_managed.fvStCEp.content.nameAlias
     want        = "EP1-ALIAS"
   }
 
   equal "type" {
     description = "type"
-    got         = data.aci_rest.fvStCEp.content.type
+    got         = data.aci_rest_managed.fvStCEp.content.type
     want        = "silent-host"
   }
 }
 
-data "aci_rest" "fvStIp" {
-  dn = "${data.aci_rest.fvStCEp.id}/ip-[1.1.1.11]"
+data "aci_rest_managed" "fvStIp" {
+  dn = "${data.aci_rest_managed.fvStCEp.id}/ip-[1.1.1.11]"
 
   depends_on = [module.main]
 }
@@ -361,13 +361,13 @@ resource "test_assertions" "fvStIp" {
 
   equal "addr" {
     description = "addr"
-    got         = data.aci_rest.fvStIp.content.addr
+    got         = data.aci_rest_managed.fvStIp.content.addr
     want        = "1.1.1.11"
   }
 }
 
-data "aci_rest" "fvRsStCEpToPathEp" {
-  dn = "${data.aci_rest.fvStCEp.id}/rsstCEpToPathEp-[topology/pod-1/protpaths-101-102/pathep-[VPC1]]"
+data "aci_rest_managed" "fvRsStCEpToPathEp" {
+  dn = "${data.aci_rest_managed.fvStCEp.id}/rsstCEpToPathEp-[topology/pod-1/protpaths-101-102/pathep-[VPC1]]"
 
   depends_on = [module.main]
 }
@@ -377,13 +377,13 @@ resource "test_assertions" "fvRsStCEpToPathEp" {
 
   equal "tDn" {
     description = "tDn"
-    got         = data.aci_rest.fvRsStCEpToPathEp.content.tDn
+    got         = data.aci_rest_managed.fvRsStCEpToPathEp.content.tDn
     want        = "topology/pod-1/protpaths-101-102/pathep-[VPC1]"
   }
 }
 
-data "aci_rest" "fvRsDomAtt_vmm" {
-  dn = "${data.aci_rest.fvAEPg.id}/rsdomAtt-[uni/vmmp-VMware/dom-VMW1]"
+data "aci_rest_managed" "fvRsDomAtt_vmm" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/rsdomAtt-[uni/vmmp-VMware/dom-VMW1]"
 
   depends_on = [module.main]
 }
@@ -393,73 +393,73 @@ resource "test_assertions" "fvRsDomAtt_vmm" {
 
   equal "tDn" {
     description = "tDn"
-    got         = data.aci_rest.fvRsDomAtt_vmm.content.tDn
+    got         = data.aci_rest_managed.fvRsDomAtt_vmm.content.tDn
     want        = "uni/vmmp-VMware/dom-VMW1"
   }
 
   equal "classPref" {
     description = "classPref"
-    got         = data.aci_rest.fvRsDomAtt_vmm.content.classPref
+    got         = data.aci_rest_managed.fvRsDomAtt_vmm.content.classPref
     want        = "useg"
   }
 
   equal "delimiter" {
     description = "delimiter"
-    got         = data.aci_rest.fvRsDomAtt_vmm.content.delimiter
+    got         = data.aci_rest_managed.fvRsDomAtt_vmm.content.delimiter
     want        = "|"
   }
 
   equal "encap" {
     description = "encap"
-    got         = data.aci_rest.fvRsDomAtt_vmm.content.encap
+    got         = data.aci_rest_managed.fvRsDomAtt_vmm.content.encap
     want        = "vlan-124"
   }
 
   equal "encapMode" {
     description = "encapMode"
-    got         = data.aci_rest.fvRsDomAtt_vmm.content.encapMode
+    got         = data.aci_rest_managed.fvRsDomAtt_vmm.content.encapMode
     want        = "auto"
   }
 
   equal "primaryEncap" {
     description = "primaryEncap"
-    got         = data.aci_rest.fvRsDomAtt_vmm.content.primaryEncap
+    got         = data.aci_rest_managed.fvRsDomAtt_vmm.content.primaryEncap
     want        = "vlan-123"
   }
 
   equal "netflowPref" {
     description = "netflowPref"
-    got         = data.aci_rest.fvRsDomAtt_vmm.content.netflowPref
+    got         = data.aci_rest_managed.fvRsDomAtt_vmm.content.netflowPref
     want        = "disabled"
   }
 
   equal "instrImedcy" {
     description = "instrImedcy"
-    got         = data.aci_rest.fvRsDomAtt_vmm.content.instrImedcy
+    got         = data.aci_rest_managed.fvRsDomAtt_vmm.content.instrImedcy
     want        = "lazy"
   }
 
   equal "resImedcy" {
     description = "resImedcy"
-    got         = data.aci_rest.fvRsDomAtt_vmm.content.resImedcy
+    got         = data.aci_rest_managed.fvRsDomAtt_vmm.content.resImedcy
     want        = "lazy"
   }
 
   equal "switchingMode" {
     description = "switchingMode"
-    got         = data.aci_rest.fvRsDomAtt_vmm.content.switchingMode
+    got         = data.aci_rest_managed.fvRsDomAtt_vmm.content.switchingMode
     want        = "native"
   }
 
   equal "customEpgName" {
     description = "customEpgName"
-    got         = data.aci_rest.fvRsDomAtt_vmm.content.customEpgName
+    got         = data.aci_rest_managed.fvRsDomAtt_vmm.content.customEpgName
     want        = "custom-epg-name"
   }
 }
 
-data "aci_rest" "vmmSecP" {
-  dn = "${data.aci_rest.fvRsDomAtt_vmm.id}/sec"
+data "aci_rest_managed" "vmmSecP" {
+  dn = "${data.aci_rest_managed.fvRsDomAtt_vmm.id}/sec"
 
   depends_on = [module.main]
 }
@@ -469,19 +469,19 @@ resource "test_assertions" "vmmSecP" {
 
   equal "allowPromiscuous" {
     description = "allowPromiscuous"
-    got         = data.aci_rest.vmmSecP.content.allowPromiscuous
+    got         = data.aci_rest_managed.vmmSecP.content.allowPromiscuous
     want        = "accept"
   }
 
   equal "forgedTransmits" {
     description = "forgedTransmits"
-    got         = data.aci_rest.vmmSecP.content.forgedTransmits
+    got         = data.aci_rest_managed.vmmSecP.content.forgedTransmits
     want        = "accept"
   }
 
   equal "macChanges" {
     description = "macChanges"
-    got         = data.aci_rest.vmmSecP.content.macChanges
+    got         = data.aci_rest_managed.vmmSecP.content.macChanges
     want        = "accept"
   }
 }
