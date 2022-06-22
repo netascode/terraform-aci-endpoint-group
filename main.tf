@@ -80,11 +80,23 @@ resource "aci_rest_managed" "fvRsDomAtt" {
 }
 
 resource "aci_rest_managed" "fvRsPathAtt_port" {
-  for_each   = { for sp in var.static_ports : "${sp.node_id}-${sp.port}-vl-${sp.vlan}" => sp if sp.channel == null && sp.fex_id == null }
+  for_each   = { for sp in var.static_ports : "${sp.node_id}-${sp.port}-vl-${sp.vlan}" => sp if sp.channel == null && sp.fex_id == null && sp.sub_port == null }
   dn         = "${aci_rest_managed.fvAEPg.dn}/rspathAtt-[${format("topology/pod-%s/paths-%s/pathep-[eth%s/%s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.module != null ? each.value.module : 1, each.value.port)}]"
   class_name = "fvRsPathAtt"
   content = {
     tDn         = format("topology/pod-%s/paths-%s/pathep-[eth%s/%s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.module != null ? each.value.module : 1, each.value.port)
+    encap       = "vlan-${each.value.vlan}"
+    mode        = each.value.mode != null ? each.value.mode : "regular"
+    instrImedcy = each.value.deployment_immediacy != null ? each.value.deployment_immediacy : "lazy"
+  }
+}
+
+resource "aci_rest_managed" "fvRsPathAtt_subport" {
+  for_each   = { for sp in var.static_ports : "${sp.node_id}-${sp.port}-vl-${sp.vlan}" => sp if sp.channel == null && sp.fex_id == null && sp.sub_port != null }
+  dn         = "${aci_rest_managed.fvAEPg.dn}/rspathAtt-[${format("topology/pod-%s/paths-%s/pathep-[eth%s/%s/%s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.module != null ? each.value.module : 1, each.value.port, each.value.sub_port)}]"
+  class_name = "fvRsPathAtt"
+  content = {
+    tDn         = format("topology/pod-%s/paths-%s/pathep-[eth%s/%s/%s]", each.value.pod_id != null ? each.value.pod_id : 1, each.value.node_id, each.value.module != null ? each.value.module : 1, each.value.port, each.value.sub_port)
     encap       = "vlan-${each.value.vlan}"
     mode        = each.value.mode != null ? each.value.mode : "regular"
     instrImedcy = each.value.deployment_immediacy != null ? each.value.deployment_immediacy : "lazy"

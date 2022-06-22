@@ -221,7 +221,7 @@ variable "vmware_vmm_domains" {
 }
 
 variable "static_ports" {
-  description = "List of static ports. Allowed values `node_id`, `node2_id`: `1` - `4000`. Allowed values `fex_id`, `fex2_id`: `101` - `199`. Allowed values `vlan`: `1` - `4096`. Allowed values `pod_id`: `1` - `255`. Default value `pod_id`: `1`. Allowed values `port`: `1` - `127`. Allowed values `module`: `1` - `9`. Default value `module`: `1`. Choices `deployment_immediacy`: `immediate`, `lazy`. Default value `deployment_immediacy`: `lazy`. Choices `mode`: `regular`, `native`, `untagged`. Default value `mode`: `regular`."
+  description = "List of static ports. Allowed values `node_id`, `node2_id`: `1` - `4000`. Allowed values `fex_id`, `fex2_id`: `101` - `199`. Allowed values `vlan`: `1` - `4096`. Allowed values `pod_id`: `1` - `255`. Default value `pod_id`: `1`. Allowed values `port`: `1` - `127`. Allowed values `sub_port`: `1` - `16`. Allowed values `module`: `1` - `9`. Default value `module`: `1`. Choices `deployment_immediacy`: `immediate`, `lazy`. Default value `deployment_immediacy`: `lazy`. Choices `mode`: `regular`, `native`, `untagged`. Default value `mode`: `regular`."
   type = list(object({
     node_id              = number
     node2_id             = optional(number)
@@ -230,6 +230,7 @@ variable "static_ports" {
     vlan                 = number
     pod_id               = optional(number)
     port                 = optional(number)
+    sub_port             = optional(number)
     module               = optional(number)
     channel              = optional(string)
     deployment_immediacy = optional(string)
@@ -284,6 +285,13 @@ variable "static_ports" {
       for sp in var.static_ports : sp.port == null || try(sp.port >= 1 && sp.port <= 127, false)
     ])
     error_message = "`port`: Minimum value: `1`. Maximum value: `127`."
+  }
+
+  validation {
+    condition = alltrue([
+      for sp in var.static_ports : sp.sub_port == null || try(sp.sub_port >= 1 && sp.sub_port <= 16, false)
+    ])
+    error_message = "`sub_port`: Minimum value: `1`. Maximum value: `16`."
   }
 
   validation {

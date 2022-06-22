@@ -65,6 +65,7 @@ module "main" {
     vlan                 = 123
     pod_id               = 1
     port                 = 10
+    sub_port             = 1
     module               = 1
     deployment_immediacy = "lazy"
     mode                 = "untagged"
@@ -265,7 +266,7 @@ resource "test_assertions" "fvRsDomAtt" {
 }
 
 data "aci_rest_managed" "fvRsPathAtt" {
-  dn = "${data.aci_rest_managed.fvAEPg.id}/rspathAtt-[topology/pod-1/paths-101/pathep-[eth1/10]]"
+  dn = "${data.aci_rest_managed.fvAEPg.id}/rspathAtt-[topology/pod-1/paths-101/pathep-[eth1/10/1]]"
 
   depends_on = [module.main]
 }
@@ -276,7 +277,7 @@ resource "test_assertions" "fvRsPathAtt" {
   equal "tDn" {
     description = "tDn"
     got         = data.aci_rest_managed.fvRsPathAtt.content.tDn
-    want        = "topology/pod-1/paths-101/pathep-[eth1/10]"
+    want        = "topology/pod-1/paths-101/pathep-[eth1/10/1]"
   }
 
   equal "encap" {

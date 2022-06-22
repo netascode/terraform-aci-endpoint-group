@@ -1,3 +1,7 @@
+## 0.1.1 (unreleased)
+
+- Add support for sub port static ports (breakout)
+
 ## 0.1.0
 
 - Migrate to devnet provider
