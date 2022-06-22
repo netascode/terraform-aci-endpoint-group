@@ -1,4 +1,4 @@
-## 0.1.1 (unreleased)
+## 0.1.1
 
 - Add support for sub port static ports (breakout)
 
