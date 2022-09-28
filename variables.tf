@@ -133,13 +133,13 @@ variable "physical_domains" {
 variable "subnets" {
   description = "List of subnets. Default value `public`: `false`. Default value `shared`: `false`. Default value `igmp_querier`: `false`. Default value `nd_ra_prefix`: `true`. Default value `no_default_gateway`: `false`."
   type = list(object({
-    description        = optional(string)
+    description        = optional(string, "")
     ip                 = string
-    public             = optional(bool)
-    shared             = optional(bool)
-    igmp_querier       = optional(bool)
-    nd_ra_prefix       = optional(bool)
-    no_default_gateway = optional(bool)
+    public             = optional(bool, false)
+    shared             = optional(bool, false)
+    igmp_querier       = optional(bool, false)
+    nd_ra_prefix       = optional(bool, true)
+    no_default_gateway = optional(bool, false)
   }))
   default = []
 
@@ -155,18 +155,18 @@ variable "vmware_vmm_domains" {
   description = "List of VMware VMM domains. Default value `u_segmentation`: `false`. Default value `netflow`: `false`. Choices `deployment_immediacy`: `immediate`, `lazy`. Default value `deployment_immediacy`: `lazy`. Choices `resolution_immediacy`: `immediate`, `lazy`, `pre-provision`. Default value `resolution_immediacy`: `immediate`. Default value `allow_promiscuous`: `false`. Default value `forged_transmits`: `false`. Default value `mac_changes`: `false`."
   type = list(object({
     name                 = string
-    u_segmentation       = optional(bool)
-    delimiter            = optional(string)
+    u_segmentation       = optional(bool, false)
+    delimiter            = optional(string, "")
     vlan                 = optional(number)
     primary_vlan         = optional(number)
     secondary_vlan       = optional(number)
-    netflow              = optional(bool)
-    deployment_immediacy = optional(string)
-    resolution_immediacy = optional(string)
-    allow_promiscuous    = optional(bool)
-    forged_transmits     = optional(bool)
-    mac_changes          = optional(bool)
-    custom_epg_name      = optional(string)
+    netflow              = optional(bool, false)
+    deployment_immediacy = optional(string, "lazy")
+    resolution_immediacy = optional(string, "immediate")
+    allow_promiscuous    = optional(bool, false)
+    forged_transmits     = optional(bool, false)
+    mac_changes          = optional(bool, false)
+    custom_epg_name      = optional(string, "")
   }))
   default = []
 
@@ -228,13 +228,13 @@ variable "static_ports" {
     fex_id               = optional(number)
     fex2_id              = optional(number)
     vlan                 = number
-    pod_id               = optional(number)
+    pod_id               = optional(number, 1)
     port                 = optional(number)
     sub_port             = optional(number)
-    module               = optional(number)
+    module               = optional(number, 1)
     channel              = optional(string)
-    deployment_immediacy = optional(string)
-    mode                 = optional(string)
+    deployment_immediacy = optional(string, "lazy")
+    mode                 = optional(string, "regular")
   }))
   default = []
 
@@ -327,18 +327,18 @@ variable "static_endpoints" {
   description = "List of static endpoints. Format `mac`: `12:34:56:78:9A:BC`. Choices `type`: `silent-host`, `tep`, `vep`. Allowed values `node_id`, `node2_id`: `1` - `4000`. Allowed values `vlan`: `1` - `4096`. Allowed values `pod_id`: `1` - `255`. Default value `pod_id`: `1`. Allowed values `port`: `1` - `127`. Allowed values `module`: `1` - `9`. Default value `module`: `1`."
   type = list(object({
     name           = string
-    alias          = optional(string)
+    alias          = optional(string, "")
     mac            = string
-    ip             = optional(string)
+    ip             = optional(string, "0.0.0.0")
     type           = string
     node_id        = optional(string)
     node2_id       = optional(string)
     vlan           = optional(string)
-    pod_id         = optional(string)
+    pod_id         = optional(string, 1)
     port           = optional(string)
-    module         = optional(string)
+    module         = optional(string, 1)
     channel        = optional(string)
-    additional_ips = optional(list(string))
+    additional_ips = optional(list(string), [])
   }))
   default = []
 
