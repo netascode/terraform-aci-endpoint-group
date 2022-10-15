@@ -31,6 +31,15 @@ resource "aci_rest_managed" "fvRsBd" {
   }
 }
 
+resource "aci_rest_managed" "fvRsCustQosPol" {
+  count      = var.custom_qos_policy != "" ? 1 : 0
+  dn         = "${aci_rest_managed.fvAEPg.dn}/rscustQosPol"
+  class_name = "fvRsCustQosPol"
+  content = {
+    tnQosCustomPolName = var.custom_qos_policy
+  }
+}
+
 resource "aci_rest_managed" "fvSubnet" {
   for_each   = { for subnet in var.subnets : subnet.ip => subnet }
   dn         = "${aci_rest_managed.fvAEPg.dn}/subnet-[${each.value.ip}]"

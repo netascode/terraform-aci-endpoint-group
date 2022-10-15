@@ -34,6 +34,7 @@ module "main" {
   flood_in_encap              = false
   intra_epg_isolation         = true
   preferred_group             = true
+  custom_qos_policy           = "CQP1"
   bridge_domain               = "BD1"
   contract_consumers          = ["CON1"]
   contract_providers          = ["CON1"]
@@ -150,6 +151,22 @@ resource "test_assertions" "fvAEPg" {
     description = "prefGrMemb"
     got         = data.aci_rest_managed.fvAEPg.content.prefGrMemb
     want        = "include"
+  }
+}
+
+data "aci_rest_managed" "fvRsCustQosPol" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/rscustQosPol"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "fvRsCustQosPol" {
+  component = "fvRsCustQosPol"
+
+  equal "tnQosCustomPolName" {
+    description = "tnQosCustomPolName"
+    got         = data.aci_rest_managed.fvRsCustQosPol.content.tnQosCustomPolName
+    want        = "CQP1"
   }
 }
 
