@@ -14,7 +14,7 @@ Note that this example will create resources. Resources can be destroyed with `t
 ```hcl
 module "aci_endpoint_group" {
   source  = "netascode/endpoint-group/aci"
-  version = ">= 0.2.1"
+  version = ">= 0.2.2"
 
   tenant                      = "ABC"
   application_profile         = "AP1"
@@ -29,6 +29,7 @@ module "aci_endpoint_group" {
   contract_consumers          = ["CON1"]
   contract_providers          = ["CON1"]
   contract_imported_consumers = ["I_CON1"]
+  contract_intra_epgs         = ["CON1"]
   physical_domains            = ["PHY1"]
   subnets = [{
     description        = "Subnet Description"

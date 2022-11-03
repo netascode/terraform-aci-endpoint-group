@@ -13,7 +13,7 @@ Location in GUI:
 ```hcl
 module "aci_endpoint_group" {
   source  = "netascode/endpoint-group/aci"
-  version = ">= 0.2.1"
+  version = ">= 0.2.2"
 
   tenant                      = "ABC"
   application_profile         = "AP1"
@@ -28,6 +28,7 @@ module "aci_endpoint_group" {
   contract_consumers          = ["CON1"]
   contract_providers          = ["CON1"]
   contract_imported_consumers = ["I_CON1"]
+  contract_intra_epgs         = ["CON1"]
   physical_domains            = ["PHY1"]
   subnets = [{
     description        = "Subnet Description"
@@ -127,6 +128,7 @@ module "aci_endpoint_group" {
 | <a name="input_contract_consumers"></a> [contract\_consumers](#input\_contract\_consumers) | List of contract consumers. | `list(string)` | `[]` | no |
 | <a name="input_contract_providers"></a> [contract\_providers](#input\_contract\_providers) | List of contract providers. | `list(string)` | `[]` | no |
 | <a name="input_contract_imported_consumers"></a> [contract\_imported\_consumers](#input\_contract\_imported\_consumers) | List of imported contract consumers. | `list(string)` | `[]` | no |
+| <a name="input_contract_intra_epgs"></a> [contract\_intra\_epgs](#input\_contract\_intra\_epgs) | List of intra-EPG contracts. | `list(string)` | `[]` | no |
 | <a name="input_physical_domains"></a> [physical\_domains](#input\_physical\_domains) | List of physical domains. | `list(string)` | `[]` | no |
 | <a name="input_subnets"></a> [subnets](#input\_subnets) | List of subnets. Default value `public`: `false`. Default value `shared`: `false`. Default value `igmp_querier`: `false`. Default value `nd_ra_prefix`: `true`. Default value `no_default_gateway`: `false`. | <pre>list(object({<br>    description        = optional(string, "")<br>    ip                 = string<br>    public             = optional(bool, false)<br>    shared             = optional(bool, false)<br>    igmp_querier       = optional(bool, false)<br>    nd_ra_prefix       = optional(bool, true)<br>    no_default_gateway = optional(bool, false)<br>  }))</pre> | `[]` | no |
 | <a name="input_vmware_vmm_domains"></a> [vmware\_vmm\_domains](#input\_vmware\_vmm\_domains) | List of VMware VMM domains. Default value `u_segmentation`: `false`. Default value `netflow`: `false`. Choices `deployment_immediacy`: `immediate`, `lazy`. Default value `deployment_immediacy`: `lazy`. Choices `resolution_immediacy`: `immediate`, `lazy`, `pre-provision`. Default value `resolution_immediacy`: `immediate`. Default value `allow_promiscuous`: `false`. Default value `forged_transmits`: `false`. Default value `mac_changes`: `false`. | <pre>list(object({<br>    name                 = string<br>    u_segmentation       = optional(bool, false)<br>    delimiter            = optional(string, "")<br>    vlan                 = optional(number)<br>    primary_vlan         = optional(number)<br>    secondary_vlan       = optional(number)<br>    netflow              = optional(bool, false)<br>    deployment_immediacy = optional(string, "lazy")<br>    resolution_immediacy = optional(string, "immediate")<br>    allow_promiscuous    = optional(bool, false)<br>    forged_transmits     = optional(bool, false)<br>    mac_changes          = optional(bool, false)<br>    custom_epg_name      = optional(string, "")<br>  }))</pre> | `[]` | no |
@@ -151,6 +153,7 @@ module "aci_endpoint_group" {
 | [aci_rest_managed.fvRsCustQosPol](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
 | [aci_rest_managed.fvRsDomAtt](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
 | [aci_rest_managed.fvRsDomAtt_vmm](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
+| [aci_rest_managed.fvRsIntraEpg](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
 | [aci_rest_managed.fvRsPathAtt_channel](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
 | [aci_rest_managed.fvRsPathAtt_fex_channel](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |
 | [aci_rest_managed.fvRsPathAtt_fex_port](https://registry.terraform.io/providers/CiscoDevNet/aci/latest/docs/resources/rest_managed) | resource |

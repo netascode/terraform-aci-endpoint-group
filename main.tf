@@ -79,6 +79,15 @@ resource "aci_rest_managed" "fvRsConsIf" {
   }
 }
 
+resource "aci_rest_managed" "fvRsIntraEpg" {
+  for_each   = toset(var.contract_intra_epgs)
+  dn         = "${aci_rest_managed.fvAEPg.dn}/rsintraEpg-${each.value}"
+  class_name = "fvRsIntraEpg"
+  content = {
+    tnVzBrCPName = each.value
+  }
+}
+
 resource "aci_rest_managed" "fvRsDomAtt" {
   for_each   = toset(var.physical_domains)
   dn         = "${aci_rest_managed.fvAEPg.dn}/rsdomAtt-[uni/phys-${each.value}]"

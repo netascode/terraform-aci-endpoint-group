@@ -1,3 +1,7 @@
+## 0.2.2 (unreleased)
+
+- Add support for intra-EPG contracts
+
 ## 0.2.1
 
 - Add `custom_qos_policy` attribute

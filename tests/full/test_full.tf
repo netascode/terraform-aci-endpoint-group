@@ -39,6 +39,7 @@ module "main" {
   contract_consumers          = ["CON1"]
   contract_providers          = ["CON1"]
   contract_imported_consumers = ["I_CON1"]
+  contract_intra_epgs         = ["CON1"]
   physical_domains            = ["PHY1"]
   subnets = [{
     description        = "Subnet Description"
@@ -265,6 +266,22 @@ resource "test_assertions" "fvRsConsIf" {
     description = "tnVzCPIfName"
     got         = data.aci_rest_managed.fvRsConsIf.content.tnVzCPIfName
     want        = "I_CON1"
+  }
+}
+
+data "aci_rest_managed" "fvRsIntraEpg" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/rsintraEpg-CON1"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "fvRsIntraEpg" {
+  component = "fvRsIntraEpg"
+
+  equal "tnVzBrCPName" {
+    description = "tnVzBrCPName"
+    got         = data.aci_rest_managed.fvRsIntraEpg.content.tnVzBrCPName
+    want        = "CON1"
   }
 }
 
