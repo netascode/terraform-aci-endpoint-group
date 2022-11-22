@@ -20,6 +20,7 @@ resource "aci_rest_managed" "fvAEPg" {
     floodOnEncap = var.flood_in_encap == true ? "enabled" : "disabled"
     pcEnfPref    = var.intra_epg_isolation == true ? "enforced" : "unenforced"
     prefGrMemb   = var.preferred_group == true ? "include" : "exclude"
+    prio         = var.qos_class
   }
 }
 

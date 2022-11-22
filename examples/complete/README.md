@@ -24,6 +24,7 @@ module "aci_endpoint_group" {
   flood_in_encap              = false
   intra_epg_isolation         = true
   preferred_group             = true
+  qos_class                   = "level1"
   custom_qos_policy           = "CQP1"
   bridge_domain               = "BD1"
   contract_consumers          = ["CON1"]
