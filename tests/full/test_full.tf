@@ -34,6 +34,7 @@ module "main" {
   flood_in_encap              = false
   intra_epg_isolation         = true
   preferred_group             = true
+  qos_class                   = "level1"
   custom_qos_policy           = "CQP1"
   bridge_domain               = "BD1"
   contract_consumers          = ["CON1"]
@@ -152,6 +153,12 @@ resource "test_assertions" "fvAEPg" {
     description = "prefGrMemb"
     got         = data.aci_rest_managed.fvAEPg.content.prefGrMemb
     want        = "include"
+  }
+
+  equal "qosClass" {
+    description = "qosClass"
+    got         = data.aci_rest_managed.fvAEPg.content.qosClass
+    want        = "level1"
   }
 }
 

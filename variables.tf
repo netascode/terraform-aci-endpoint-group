@@ -68,6 +68,17 @@ variable "preferred_group" {
   default     = false
 }
 
+variable "qos_class" {
+  description = "QoS class."
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = can(regex("^level[1-6]|unspecified$", var.qos_class))
+    error_message = "Allowed values are `level1` to `level6` and `unspecified`."
+  }
+}
+
 variable "custom_qos_policy" {
   description = "Custom QoS policy name."
   type        = string
