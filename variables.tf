@@ -71,10 +71,10 @@ variable "preferred_group" {
 variable "qos_class" {
   description = "QoS class."
   type        = string
-  default     = ""
+  default     = "unspecified"
 
   validation {
-    condition     = can(regex("^level[1-6]|unspecified$", var.qos_class))
+    condition     = can(contains(["level1", "level2", "level3", "level4", "level5", "level6", "unspecified"], var.qos_class))
     error_message = "Allowed values are `level1` to `level6` and `unspecified`."
   }
 }

@@ -155,9 +155,9 @@ resource "test_assertions" "fvAEPg" {
     want        = "include"
   }
 
-  equal "qosClass" {
-    description = "qosClass"
-    got         = data.aci_rest_managed.fvAEPg.content.qosClass
+  equal "prio" {
+    description = "prio"
+    got         = data.aci_rest_managed.fvAEPg.content.prio
     want        = "level1"
   }
 }
