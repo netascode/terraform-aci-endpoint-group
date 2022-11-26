@@ -1,3 +1,7 @@
+## 0.2.3 (unreleased)
+
+- Add support for QoS class
+
 ## 0.2.2
 
 - Add support for intra-EPG contracts
