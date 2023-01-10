@@ -175,6 +175,15 @@ variable "subnets" {
     igmp_querier       = optional(bool, false)
     nd_ra_prefix       = optional(bool, true)
     no_default_gateway = optional(bool, false)
+    ip_pools = optional(list(object({
+      name              = string
+      start_ip          = optional(string, "")
+      end_ip            = optional(string, "")
+      dns_search_suffix = optional(string, "")
+      dns_server        = optional(string, "")
+      dns_suffix        = optional(string, "")
+      wins_server       = optional(string, "")
+    })), [])
   }))
   default = []
 

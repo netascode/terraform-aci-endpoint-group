@@ -50,6 +50,17 @@ module "main" {
     igmp_querier       = true
     nd_ra_prefix       = true
     no_default_gateway = false
+    ip_pools = [
+      {
+        name              = "POOL1"
+        start_ip          = "172.16.0.1"
+        end_ip            = "172.16.0.10"
+        dns_server        = "dns.cisco.com"
+        dns_search_suffix = "cisco"
+        dns_suffix        = "cisco"
+        wins_server       = "win"
+      }
+    ]
   }]
   vmware_vmm_domains = [{
     name                 = "VMW1"
@@ -241,6 +252,57 @@ resource "test_assertions" "fvSubnet" {
     description = "scope"
     got         = data.aci_rest_managed.fvSubnet.content.scope
     want        = "public,shared"
+  }
+}
+
+data "aci_rest_managed" "fvCepNetCfgPol" {
+  dn = "${data.aci_rest_managed.fvSubnet.id}/cepNetCfgPol-POOL1"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "fvCepNetCfgPol" {
+  component = "fvCepNetCfgPol"
+
+  equal "name" {
+    description = "name"
+    got         = data.aci_rest_managed.fvCepNetCfgPol.content.name
+    want        = "POOL1"
+  }
+  equal "startIp" {
+    description = "startIp"
+    got         = data.aci_rest_managed.fvCepNetCfgPol.content.startIp
+    want        = "172.16.0.1"
+  }
+
+  equal "endIp" {
+    description = "endIp"
+    got         = data.aci_rest_managed.fvCepNetCfgPol.content.endIp
+    want        = "POOL1"
+  }
+
+  equal "dnsSearchSuffix" {
+    description = "dnsSearchSuffix"
+    got         = data.aci_rest_managed.fvCepNetCfgPol.content.dnsSearchSuffix
+    want        = "cisco"
+  }
+
+  equal "dnsServers" {
+    description = "dnsServers"
+    got         = data.aci_rest_managed.fvCepNetCfgPol.content.dnsServers
+    want        = "dns.cisco.com"
+  }
+
+  equal "dnsSuffix" {
+    description = "dnsSuffix"
+    got         = data.aci_rest_managed.fvCepNetCfgPol.content.dnsSuffix
+    want        = "cisco"
+  }
+
+  equal "winsServers" {
+    description = "winsServers"
+    got         = data.aci_rest_managed.fvCepNetCfgPol.content.winsServers
+    want        = "win"
   }
 }
 

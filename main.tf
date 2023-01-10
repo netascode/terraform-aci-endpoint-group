@@ -8,6 +8,21 @@ locals {
       }
     ]
   ])
+  ip_pools_list = flatten([
+    for subnet in var.subnets : [
+      for pool in lookup(subnet, "ip_pools", []) : {
+        id                = "${subnet.ip}-${pool.name}"
+        subnet_ip         = subnet.ip
+        name              = pool.name
+        start_ip          = pool.start_ip
+        end_ip            = pool.end_ip
+        dns_search_suffix = pool.dns_search_suffix
+        dns_server        = pool.dns_server
+        dns_suffix        = pool.dns_suffix
+        wins_server       = pool.wins_server
+      }
+    ]
+  ])
 }
 
 resource "aci_rest_managed" "fvAEPg" {
@@ -52,6 +67,22 @@ resource "aci_rest_managed" "fvSubnet" {
     scope = join(",", concat(each.value.public == true ? ["public"] : ["private"], each.value.shared == true ? ["shared"] : []))
   }
 }
+
+resource "aci_rest_managed" "fvCepNetCfgPol" {
+  for_each   = { for pool in local.ip_pools_list : pool.id => pool }
+  dn         = "${aci_rest_managed.fvSubnet[each.value.subnet_ip].dn}/cepNetCfgPol-${each.value.name}"
+  class_name = "fvCepNetCfgPol"
+  content = {
+    name            = each.value.name
+    startIp         = each.value.start_ip
+    endIp           = each.value.end_ip
+    dnsSearchSuffix = each.value.dns_search_suffix
+    dnsServers      = each.value.dns_server
+    dnsSuffix       = each.value.dns_suffix
+    winsServers     = each.value.wins_server
+  }
+}
+
 
 resource "aci_rest_managed" "fvRsCons" {
   for_each   = toset(var.contract_consumers)
