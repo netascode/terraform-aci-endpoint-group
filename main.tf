@@ -83,6 +83,20 @@ resource "aci_rest_managed" "fvCepNetCfgPol" {
   }
 }
 
+resource "aci_rest_managed" "fvEpReachability" {
+  for_each   = { for subnet in var.subnets : subnet.ip => subnet if subnet.next_hop_ip != "" }
+  dn         = "${aci_rest_managed.fvSubnet[each.value.ip].dn}/epReach"
+  class_name = "fvEpReachability"
+}
+
+resource "aci_rest_managed" "ipNexthopEpP" {
+  for_each   = { for subnet in var.subnets : subnet.ip => subnet if subnet.next_hop_ip != "" }
+  dn         = "${aci_rest_managed.fvEpReachability[each.value.ip].dn}/nh-[${each.value.next_hop_ip}]"
+  class_name = "ipNexthopEpP"
+  content = {
+    nhAddr = each.value.next_hop_ip
+  }
+}
 
 resource "aci_rest_managed" "fvRsCons" {
   for_each   = toset(var.contract_consumers)

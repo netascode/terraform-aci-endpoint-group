@@ -61,6 +61,12 @@ module "main" {
         wins_server       = "win"
       }
     ]
+    },
+    {
+      ip                 = "2.2.2.2/32"
+      no_default_gateway = true
+      next_hop_ip        = "192.169.1.1"
+
   }]
   vmware_vmm_domains = [{
     name                 = "VMW1"
@@ -269,6 +275,7 @@ resource "test_assertions" "fvCepNetCfgPol" {
     got         = data.aci_rest_managed.fvCepNetCfgPol.content.name
     want        = "POOL1"
   }
+
   equal "startIp" {
     description = "startIp"
     got         = data.aci_rest_managed.fvCepNetCfgPol.content.startIp
@@ -278,7 +285,7 @@ resource "test_assertions" "fvCepNetCfgPol" {
   equal "endIp" {
     description = "endIp"
     got         = data.aci_rest_managed.fvCepNetCfgPol.content.endIp
-    want        = "POOL1"
+    want        = "172.16.0.10"
   }
 
   equal "dnsSearchSuffix" {
@@ -303,6 +310,22 @@ resource "test_assertions" "fvCepNetCfgPol" {
     description = "winsServers"
     got         = data.aci_rest_managed.fvCepNetCfgPol.content.winsServers
     want        = "win"
+  }
+}
+
+data "aci_rest_managed" "ipNexthopEpP" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/subnet-[2.2.2.2/32]/epReach/nh-[192.168.1.1]"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "ipNexthopEpP" {
+  component = "ipNexthopEpP"
+
+  equal "nh" {
+    description = "nh"
+    got         = data.aci_rest_managed.ipNexthopEpP.content.nh
+    want        = "192.168.1.1"
   }
 }
 

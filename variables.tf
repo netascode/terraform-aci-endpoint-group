@@ -184,6 +184,7 @@ variable "subnets" {
       dns_suffix        = optional(string, "")
       wins_server       = optional(string, "")
     })), [])
+    next_hop_ip = optional(string, "")
   }))
   default = []
 
