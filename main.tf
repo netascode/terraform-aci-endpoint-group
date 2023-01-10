@@ -217,6 +217,16 @@ resource "aci_rest_managed" "fvRsDomAtt_vmm" {
     switchingMode = "native"
     customEpgName = each.value.custom_epg_name
   }
+
+  # child {
+  #   rn         = "uplinkorder"
+  #   class_name = "fvUplinkOrderCont"
+  #   content = {
+  #     active  = "1,2"
+  #     standby = ""
+  #   }
+  # }
+
 }
 
 resource "aci_rest_managed" "vmmSecP" {
@@ -250,7 +260,7 @@ resource "aci_rest_managed" "fvUplinkOrderCont" {
   dn         = "${aci_rest_managed.fvRsDomAtt_vmm[each.key].dn}/uplinkorder"
   class_name = "fvUplinkOrderCont"
   content = {
-    active  = each.value.active_uplinks_order
+    active = each.value.active_uplinks_order
     standby = each.value.standby_uplinks
   }
 }
