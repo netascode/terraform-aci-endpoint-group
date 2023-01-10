@@ -64,6 +64,9 @@ module "main" {
     forged_transmits     = true
     mac_changes          = true
     custom_epg_name      = "custom-epg-name"
+    elag                 = "ELAG1"
+    active_uplinks_order = "1"
+    standby_uplinks      = "2"
   }]
   static_ports = [{
     node_id              = 101
@@ -528,4 +531,43 @@ resource "test_assertions" "vmmSecP" {
     got         = data.aci_rest_managed.vmmSecP.content.macChanges
     want        = "accept"
   }
+}
+
+data "aci_rest_managed" "fvRsVmmVSwitchEnhancedLagPol" {
+  dn = "${data.aci_rest_managed.fvRsDomAtt_vmm.id}/epglagpolatt/rsvmmVSwitchEnhancedLagPol"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "fvRsVmmVSwitchEnhancedLagPol" {
+  component = "fvRsVmmVSwitchEnhancedLagPol"
+
+  equal "tDn" {
+    description = "tDn"
+    got         = data.aci_rest_managed.fvRsVmmVSwitchEnhancedLagPol.content.tDn
+    want        = "uni/vmmp-VMware/dom-VMW1/vswitchpolcont/enlacplagp-ELAG1"
+  }
+}
+
+data "aci_rest_managed" "fvUplinkOrderCont" {
+  dn = "${data.aci_rest_managed.fvRsDomAtt_vmm.id}/uplinkorder"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "fvUplinkOrderCont" {
+  component = "fvUplinkOrderCont"
+
+  equal "active" {
+    description = "active"
+    got         = data.aci_rest_managed.fvUplinkOrderCont.content.active
+    want        = "1"
+  }
+
+  equal "standby" {
+    description = "standby"
+    got         = data.aci_rest_managed.fvUplinkOrderCont.content.standby
+    want        = "2"
+  }
+
 }

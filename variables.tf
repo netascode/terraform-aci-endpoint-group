@@ -202,6 +202,9 @@ variable "vmware_vmm_domains" {
     forged_transmits     = optional(bool, false)
     mac_changes          = optional(bool, false)
     custom_epg_name      = optional(string, "")
+    elag                 = optional(string, "")
+    active_uplinks_order = optional(string, "")
+    standby_uplinks      = optional(string, "")
   }))
   default = []
 
@@ -253,6 +256,14 @@ variable "vmware_vmm_domains" {
     ])
     error_message = "`custom_epg_name`: Maximum characters: 80."
   }
+
+  validation {
+    condition = alltrue([
+      for dom in var.vmware_vmm_domains : can(regex("^[a-zA-Z0-9_.-]{0,64}$", dom.elag))
+    ])
+    error_message = "`elag`: Allowed characters: `a`-`z`, `A`-`Z`, `0`-`9`, `_`, `.`, `-`. Maximum characters: 64."
+  }
+
 }
 
 variable "static_ports" {

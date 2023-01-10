@@ -229,3 +229,28 @@ resource "aci_rest_managed" "vmmSecP" {
     macChanges       = each.value.mac_changes == true ? "accept" : "reject"
   }
 }
+
+resource "aci_rest_managed" "fvAEPgLagPolAtt" {
+  for_each   = { for vmm_vwm in var.vmware_vmm_domains : vmm_vwm.name => vmm_vwm if vmm_vwm.elag != "" }
+  dn         = "${aci_rest_managed.fvRsDomAtt_vmm[each.key].dn}/epglagpolatt"
+  class_name = "fvAEPgLagPolAtt"
+}
+
+resource "aci_rest_managed" "fvRsVmmVSwitchEnhancedLagPol" {
+  for_each   = { for vmm_vwm in var.vmware_vmm_domains : vmm_vwm.name => vmm_vwm if vmm_vwm.elag != "" }
+  dn         = "${aci_rest_managed.fvAEPgLagPolAtt[each.key].dn}/rsvmmVSwitchEnhancedLagPol"
+  class_name = "fvRsVmmVSwitchEnhancedLagPol"
+  content = {
+    tDn = "uni/vmmp-VMware/dom-${each.value.name}/vswitchpolcont/enlacplagp-${each.value.elag}"
+  }
+}
+
+resource "aci_rest_managed" "fvUplinkOrderCont" {
+  for_each   = { for vmm_vwm in var.vmware_vmm_domains : vmm_vwm.name => vmm_vwm if vmm_vwm.active_uplinks_order != "" || vmm_vwm.standby_uplinks != "" }
+  dn         = "${aci_rest_managed.fvRsDomAtt_vmm[each.key].dn}/uplinkorder"
+  class_name = "fvUplinkOrderCont"
+  content = {
+    active  = each.value.active_uplinks_order
+    standby = each.value.standby_uplinks
+  }
+}
