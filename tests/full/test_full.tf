@@ -108,6 +108,22 @@ module "main" {
     channel        = "VPC1"
     additional_ips = ["1.1.1.11"]
   }]
+
+  l4l7_virtual_ips = [
+    {
+      ip          = "1.2.3.4"
+      description = "My Virtual IP"
+    }
+  ]
+  l4l7_address_pools = [
+    {
+      name            = "POOL1"
+      gateway_address = "1.1.1.1/24"
+      from            = "1.1.1.10"
+      to              = "1.1.1.100"
+    }
+  ]
+
 }
 
 data "aci_rest_managed" "fvAEPg" {
@@ -527,5 +543,70 @@ resource "test_assertions" "vmmSecP" {
     description = "macChanges"
     got         = data.aci_rest_managed.vmmSecP.content.macChanges
     want        = "accept"
+  }
+}
+
+data "aci_rest_managed" "fvVip" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/vip-1.2.3.4"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "fvVip" {
+  component = "fvVip"
+
+  equal "addr" {
+    description = "addr"
+    got         = data.aci_rest_managed.fvVip.content.addr
+    want        = "1.2.3.4"
+  }
+  equal "descr" {
+    description = "descr"
+    got         = data.aci_rest_managed.fvVip.content.descr
+    want        = "My Virtual IP"
+  }
+}
+
+
+data "aci_rest_managed" "vnsAddrInst" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/CtrlrAddrInst-POOL1"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "vnsAddrInst" {
+  component = "vnsAddrInst"
+
+  equal "name" {
+    description = "name"
+    got         = data.aci_rest_managed.vnsAddrInst.content.name
+    want        = "POOL1"
+  }
+  equal "addr" {
+    description = "addr"
+    got         = data.aci_rest_managed.vnsAddrInst.content.addr
+    want        = "1.1.1.1/24"
+  }
+}
+
+
+data "aci_rest_managed" "fvnsUcastAddrBlk" {
+  dn = "${data.aci_rest_managed.vnsAddrInst.id}/fromaddr-[1.1.1.10]-toaddr-[1.1.1.100]"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "fvnsUcastAddrBlk" {
+  component = "fvnsUcastAddrBlk"
+
+  equal "from" {
+    description = "from"
+    got         = data.aci_rest_managed.fvnsUcastAddrBlk.content.from
+    want        = "1.1.1.10"
+  }
+  equal "to" {
+    description = "to"
+    got         = data.aci_rest_managed.fvnsUcastAddrBlk.content.to
+    want        = "1.1.1.100"
   }
 }

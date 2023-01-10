@@ -454,3 +454,38 @@ variable "static_endpoints" {
     error_message = "`channel`: Allowed characters: `a`-`z`, `A`-`Z`, `0`-`9`, `_`, `.`, `-`. Maximum characters: 64."
   }
 }
+
+variable "l4l7_virtual_ips" {
+  description = "List of EPG L4/L7 Virtual IPs"
+  type = list(object({
+    ip          = string
+    description = optional(string, "")
+  }))
+  default = []
+
+  validation {
+    condition = alltrue([
+      for vip in var.l4l7_virtual_ips : can(regex("^[a-zA-Z0-9\\!#$%()*,-./:;@ _{|}~?&+]{0,128}$", vip.description))
+    ])
+    error_message = "`description`: Allowed characters:  `a`-`z`, `A`-`Z`, `0`-`9`, `\\`, `!`, `#`, `$`, `%`, `(`, `)`, `*`, `,`, `-`, `.`, `/`, `:`, `;`, `@`, ` `, `_`, `{`, `|`, }`, `~`, `?`, `&`, `+`.. Maximum characters: 128."
+  }
+
+}
+
+variable "l4l7_address_pools" {
+  description = "List of EPG L4/L7 Address Pools"
+  type = list(object({
+    name            = string
+    gateway_address = string
+    from            = optional(string, "")
+    to              = optional(string, "")
+  }))
+  default = []
+
+  validation {
+    condition = alltrue([
+      for pool in var.l4l7_address_pools : can(regex("^[a-zA-Z0-9_.-]{0,64}$", pool.name))
+    ])
+    error_message = "`name`: Allowed characters: `a`-`z`, `A`-`Z`, `0`-`9`, `_`, `.`, `-`. Maximum characters: 64."
+  }
+}

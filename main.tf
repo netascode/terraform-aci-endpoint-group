@@ -229,3 +229,34 @@ resource "aci_rest_managed" "vmmSecP" {
     macChanges       = each.value.mac_changes == true ? "accept" : "reject"
   }
 }
+
+
+resource "aci_rest_managed" "fvVip" {
+  for_each   = { for vip in var.l4l7_virtual_ips : vip.ip => vip }
+  dn         = "${aci_rest_managed.fvAEPg.dn}/vip-${each.key}"
+  class_name = "fvVip"
+  content = {
+    addr  = each.value.ip
+    descr = each.value.description
+  }
+}
+
+resource "aci_rest_managed" "vnsAddrInst" {
+  for_each   = { for pool in var.l4l7_address_pools : pool.name => pool }
+  dn         = "${aci_rest_managed.fvAEPg.dn}/CtrlrAddrInst-${each.key}"
+  class_name = "vnsAddrInst"
+  content = {
+    name = each.value.name
+    addr = each.value.gateway_address
+  }
+}
+
+resource "aci_rest_managed" "fvnsUcastAddrBlk" {
+  for_each   = { for pool in var.l4l7_address_pools : pool.name => pool if pool.from != "" && pool.to != "" }
+  dn         = "${aci_rest_managed.vnsAddrInst[each.key].dn}/fromaddr-[${each.value.from}]-toaddr-[${each.value.to}]"
+  class_name = "fvnsUcastAddrBlk"
+  content = {
+    from = each.value.from
+    to   = each.value.to
+  }
+}
