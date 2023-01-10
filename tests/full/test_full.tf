@@ -65,7 +65,7 @@ module "main" {
     {
       ip                 = "2.2.2.2/32"
       no_default_gateway = true
-      next_hop_ip        = "192.169.1.1"
+      next_hop_ip        = "192.168.1.1"
 
   }]
   vmware_vmm_domains = [{
