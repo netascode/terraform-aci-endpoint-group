@@ -96,6 +96,20 @@ module "aci_endpoint_group" {
     channel        = "VPC1"
     additional_ips = ["1.1.1.11"]
   }]
+  l4l7_virtual_ips = [
+    {
+      ip          = "1.2.3.4"
+      description = "My Virtual IP"
+    }
+  ]
+  l4l7_address_pools = [
+    {
+      name            = "POOL1"
+      gateway_address = "1.1.1.1/24"
+      from            = "1.1.1.10"
+      to              = "1.1.1.100"
+    }
+  ]
 }
 ```
 
