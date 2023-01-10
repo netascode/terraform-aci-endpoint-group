@@ -66,8 +66,8 @@ module "main" {
       ip                 = "2.2.2.2/32"
       no_default_gateway = true
       next_hop_ip        = "192.168.1.1"
-
-  }]
+    }
+  ]
   vmware_vmm_domains = [{
     name                 = "VMW1"
     u_segmentation       = true
@@ -322,9 +322,9 @@ data "aci_rest_managed" "ipNexthopEpP" {
 resource "test_assertions" "ipNexthopEpP" {
   component = "ipNexthopEpP"
 
-  equal "nh" {
-    description = "nh"
-    got         = data.aci_rest_managed.ipNexthopEpP.content.nh
+  equal "nhAddr" {
+    description = "nhAddr"
+    got         = data.aci_rest_managed.ipNexthopEpP.content.nhAddr
     want        = "192.168.1.1"
   }
 }
