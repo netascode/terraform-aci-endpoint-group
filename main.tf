@@ -218,14 +218,14 @@ resource "aci_rest_managed" "fvRsDomAtt_vmm" {
     customEpgName = each.value.custom_epg_name
   }
 
-  # child {
-  #   rn         = "uplinkorder"
-  #   class_name = "fvUplinkOrderCont"
-  #   content = {
-  #     active  = "1,2"
-  #     standby = ""
-  #   }
-  # }
+  child {
+    rn         = "uplinkorder"
+    class_name = "fvUplinkOrderCont"
+    content = {
+      active  = each.value.active_uplinks_order
+      standby = each.value.standby_uplinks
+    }
+  }
 
 }
 
@@ -252,15 +252,5 @@ resource "aci_rest_managed" "fvRsVmmVSwitchEnhancedLagPol" {
   class_name = "fvRsVmmVSwitchEnhancedLagPol"
   content = {
     tDn = "uni/vmmp-VMware/dom-${each.value.name}/vswitchpolcont/enlacplagp-${each.value.elag}"
-  }
-}
-
-resource "aci_rest_managed" "fvUplinkOrderCont" {
-  for_each   = { for vmm_vwm in var.vmware_vmm_domains : vmm_vwm.name => vmm_vwm if vmm_vwm.active_uplinks_order != "" || vmm_vwm.standby_uplinks != "" }
-  dn         = "${aci_rest_managed.fvRsDomAtt_vmm[each.key].dn}/uplinkorder"
-  class_name = "fvUplinkOrderCont"
-  content = {
-    active = each.value.active_uplinks_order
-    standby = each.value.standby_uplinks
   }
 }
