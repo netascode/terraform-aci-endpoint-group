@@ -40,7 +40,24 @@ module "aci_endpoint_group" {
     igmp_querier       = true
     nd_ra_prefix       = true
     no_default_gateway = false
-  }]
+    },
+    {
+      ip                 = "2.2.2.2/32"
+      no_default_gateway = true
+      next_hop_ip        = "192.168.1.1"
+    },
+    {
+      ip                 = "3.3.3.3/32"
+      no_default_gateway = true
+      anycast_mac        = "00:00:00:01:02:03"
+    },
+    {
+      ip                 = "4.4.4.4/32"
+      no_default_gateway = true
+      nlb_group          = "230.1.1.1"
+      nlb_mode           = "mode-mcast-igmp"
+    }
+  ]
   vmware_vmm_domains = [{
     name                 = "VMW1"
     u_segmentation       = true

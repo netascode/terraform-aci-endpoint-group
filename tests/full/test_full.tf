@@ -66,6 +66,17 @@ module "main" {
       ip                 = "2.2.2.2/32"
       no_default_gateway = true
       next_hop_ip        = "192.168.1.1"
+    },
+    {
+      ip                 = "3.3.3.3/32"
+      no_default_gateway = true
+      anycast_mac        = "00:00:00:01:02:03"
+    },
+    {
+      ip                 = "4.4.4.4/32"
+      no_default_gateway = true
+      nlb_group          = "230.1.1.1"
+      nlb_mode           = "mode-mcast-igmp"
     }
   ]
   vmware_vmm_domains = [{
@@ -326,6 +337,50 @@ resource "test_assertions" "ipNexthopEpP" {
     description = "nhAddr"
     got         = data.aci_rest_managed.ipNexthopEpP.content.nhAddr
     want        = "192.168.1.1"
+  }
+}
+
+data "aci_rest_managed" "fvEpAnycast" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/subnet-[3.3.3.3/32]/epAnycast-[00:00:00:01:02:03]"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "fvEpAnycast" {
+  component = "fvEpAnycast"
+
+  equal "mac" {
+    description = "mac"
+    got         = data.aci_rest_managed.fvEpAnycast.content.mac
+    want        = "192.168.1.1"
+  }
+}
+
+data "aci_rest_managed" "fvEpNlb" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/subnet-[4.4.4.4/32]/epnlb"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "fvEpNlb" {
+  component = "fvEpNlb"
+
+  equal "group" {
+    description = "group"
+    got         = data.aci_rest_managed.fvEpNlb.content.group
+    want        = "230.1.1.1"
+  }
+
+  equal "mac" {
+    description = "mac"
+    got         = data.aci_rest_managed.fvEpNlb.content.mac
+    want        = "00:00:00:00:00:00"
+  }
+
+  equal "mode" {
+    description = "mode"
+    got         = data.aci_rest_managed.fvEpNlb.content.mode
+    want        = "mode-mcast-igmp"
   }
 }
 

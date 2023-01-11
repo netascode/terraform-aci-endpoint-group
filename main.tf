@@ -98,6 +98,26 @@ resource "aci_rest_managed" "ipNexthopEpP" {
   }
 }
 
+resource "aci_rest_managed" "fvEpAnycast" {
+  for_each   = { for subnet in var.subnets : subnet.ip => subnet if subnet.anycast_mac != "" }
+  dn         = "${aci_rest_managed.fvSubnet[each.value.ip].dn}/epAnycast-[${each.value.anycast_mac}]"
+  class_name = "fvEpAnycast"
+  content = {
+    mac = each.value.anycast_mac
+  }
+}
+
+resource "aci_rest_managed" "fvEpNlb" {
+  for_each   = { for subnet in var.subnets : subnet.ip => subnet if subnet.nlb_mode != "" }
+  dn         = "${aci_rest_managed.fvSubnet[each.value.ip].dn}/epnlb"
+  class_name = "fvEpNlb"
+  content = {
+    group = each.value.nlb_group
+    mac   = each.value.nlb_mac
+    mode  = each.value.nlb_mode == "mode-mcast-static" ? "mode-mcast--static" : each.value.nlb_mode
+  }
+}
+
 resource "aci_rest_managed" "fvRsCons" {
   for_each   = toset(var.contract_consumers)
   dn         = "${aci_rest_managed.fvAEPg.dn}/rscons-${each.value}"
