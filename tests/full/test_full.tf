@@ -37,11 +37,16 @@ module "main" {
   qos_class                   = "level1"
   custom_qos_policy           = "CQP1"
   bridge_domain               = "BD1"
+  trust_control_policy        = "TRUST_POL"
   contract_consumers          = ["CON1"]
   contract_providers          = ["CON1"]
   contract_imported_consumers = ["I_CON1"]
   contract_intra_epgs         = ["CON1"]
   physical_domains            = ["PHY1"]
+  tags = [
+    "tag1",
+    "tag2"
+  ]
   subnets = [{
     description        = "Subnet Description"
     ip                 = "1.1.1.1/24"
@@ -235,6 +240,38 @@ resource "test_assertions" "fvRsBd" {
     description = "tnFvBDName"
     got         = data.aci_rest_managed.fvRsBd.content.tnFvBDName
     want        = "BD1"
+  }
+}
+
+data "aci_rest_managed" "fvRsTrustCtrl" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/rstrustCtrl"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "fvRsTrustCtrl" {
+  component = "fvRsTrustCtrl"
+
+  equal "tnFhsTrustCtrlPolName" {
+    description = "tnFhsTrustCtrlPolName"
+    got         = data.aci_rest_managed.fvRsTrustCtrl.content.tnFhsTrustCtrlPolName
+    want        = "TRUST_POL"
+  }
+}
+
+data "aci_rest_managed" "tagInst" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/tag-tag1"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "tagInst" {
+  component = "tagInst"
+
+  equal "name" {
+    description = "name"
+    got         = data.aci_rest_managed.tagInst.content.name
+    want        = "tag1"
   }
 }
 

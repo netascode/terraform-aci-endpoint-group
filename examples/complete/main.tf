@@ -13,11 +13,16 @@ module "aci_endpoint_group" {
   qos_class                   = "level1"
   custom_qos_policy           = "CQP1"
   bridge_domain               = "BD1"
+  trust_control_policy        = "TRUST_POL"
   contract_consumers          = ["CON1"]
   contract_providers          = ["CON1"]
   contract_imported_consumers = ["I_CON1"]
   contract_intra_epgs         = ["CON1"]
   physical_domains            = ["PHY1"]
+  tags = [
+    "tag1",
+    "tag2"
+  ]
   subnets = [{
     description        = "Subnet Description"
     ip                 = "1.1.1.1/24"

@@ -100,6 +100,30 @@ variable "bridge_domain" {
   }
 }
 
+variable "tags" {
+  description = "List of EPG tags."
+  type        = list(string)
+  default     = []
+
+  validation {
+    condition = alltrue([
+      for tag in var.tags : can(regex("^[a-zA-Z0-9_.-]{0,64}$", tag))
+    ])
+    error_message = "Allowed characters: `a`-`z`, `A`-`Z`, `0`-`9`, `_`, `.`, `-`. Maximum characters: 64."
+  }
+}
+
+variable "trust_control_policy" {
+  description = "EPG Trust Control Policy Name."
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = can(regex("^[a-zA-Z0-9_.-]{0,64}$", var.trust_control_policy))
+    error_message = "Allowed characters: `a`-`z`, `A`-`Z`, `0`-`9`, `_`, `.`, `-`. Maximum characters: 64."
+  }
+}
+
 variable "contract_consumers" {
   description = "List of contract consumers."
   type        = list(string)

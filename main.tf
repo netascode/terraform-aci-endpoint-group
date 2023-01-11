@@ -118,6 +118,24 @@ resource "aci_rest_managed" "fvEpNlb" {
   }
 }
 
+resource "aci_rest_managed" "tagInst" {
+  for_each   = toset(var.tags)
+  dn         = "${aci_rest_managed.fvAEPg.dn}/tag-${each.value}"
+  class_name = "tagInst"
+  content = {
+    name = each.value
+  }
+}
+
+resource "aci_rest_managed" "fvRsTrustCtrl" {
+  count      = var.trust_control_policy != "" ? 1 : 0
+  dn         = "${aci_rest_managed.fvAEPg.dn}/rstrustCtrl"
+  class_name = "fvRsTrustCtrl"
+  content = {
+    tnFhsTrustCtrlPolName = var.trust_control_policy
+  }
+}
+
 resource "aci_rest_managed" "fvRsCons" {
   for_each   = toset(var.contract_consumers)
   dn         = "${aci_rest_managed.fvAEPg.dn}/rscons-${each.value}"
