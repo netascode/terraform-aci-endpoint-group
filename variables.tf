@@ -190,7 +190,7 @@ variable "physical_domains" {
 }
 
 variable "subnets" {
-  description = "List of subnets. Default value `public`: `false`. Default value `shared`: `false`. Default value `igmp_querier`: `false`. Default value `nd_ra_prefix`: `true`. Default value `no_default_gateway`: `false`. `nlb_mode` allowed values: `mode-mcast-igmp`, `mode-uc` or `mode-mcast-static`"
+  description = "List of subnets. Default value `public`: `false`. Default value `shared`: `false`. Default value `igmp_querier`: `false`. Default value `nd_ra_prefix`: `true`. Default value `no_default_gateway`: `false`. `nlb_mode` allowed values: `mode-mcast-igmp`, `mode-uc` or `mode-mcast-static`."
   type = list(object({
     description        = optional(string, "")
     ip                 = string
@@ -501,7 +501,7 @@ variable "static_endpoints" {
 }
 
 variable "l4l7_virtual_ips" {
-  description = "List of EPG L4/L7 Virtual IPs"
+  description = "List of EPG L4/L7 Virtual IPs."
   type = list(object({
     ip          = string
     description = optional(string, "")
@@ -518,7 +518,7 @@ variable "l4l7_virtual_ips" {
 }
 
 variable "l4l7_address_pools" {
-  description = "List of EPG L4/L7 Address Pools"
+  description = "List of EPG L4/L7 Address Pools."
   type = list(object({
     name            = string
     gateway_address = string
