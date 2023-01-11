@@ -37,11 +37,16 @@ module "main" {
   qos_class                   = "level1"
   custom_qos_policy           = "CQP1"
   bridge_domain               = "BD1"
+  trust_control_policy        = "TRUST_POL"
   contract_consumers          = ["CON1"]
   contract_providers          = ["CON1"]
   contract_imported_consumers = ["I_CON1"]
   contract_intra_epgs         = ["CON1"]
   physical_domains            = ["PHY1"]
+  tags = [
+    "tag1",
+    "tag2"
+  ]
   subnets = [{
     description        = "Subnet Description"
     ip                 = "1.1.1.1/24"
@@ -50,7 +55,35 @@ module "main" {
     igmp_querier       = true
     nd_ra_prefix       = true
     no_default_gateway = false
-  }]
+    ip_pools = [
+      {
+        name              = "POOL1"
+        start_ip          = "172.16.0.1"
+        end_ip            = "172.16.0.10"
+        dns_server        = "dns.cisco.com"
+        dns_search_suffix = "cisco"
+        dns_suffix        = "cisco"
+        wins_server       = "win"
+      }
+    ]
+    },
+    {
+      ip                 = "2.2.2.2/32"
+      no_default_gateway = true
+      next_hop_ip        = "192.168.1.1"
+    },
+    {
+      ip                 = "3.3.3.3/32"
+      no_default_gateway = true
+      anycast_mac        = "00:00:00:01:02:03"
+    },
+    {
+      ip                 = "4.4.4.4/32"
+      no_default_gateway = true
+      nlb_group          = "230.1.1.1"
+      nlb_mode           = "mode-mcast-igmp"
+    }
+  ]
   vmware_vmm_domains = [{
     name                 = "VMW1"
     u_segmentation       = true
@@ -108,6 +141,22 @@ module "main" {
     channel        = "VPC1"
     additional_ips = ["1.1.1.11"]
   }]
+
+  l4l7_virtual_ips = [
+    {
+      ip          = "1.2.3.4"
+      description = "My Virtual IP"
+    }
+  ]
+  l4l7_address_pools = [
+    {
+      name            = "POOL1"
+      gateway_address = "1.1.1.1/24"
+      from            = "1.1.1.10"
+      to              = "1.1.1.100"
+    }
+  ]
+
 }
 
 data "aci_rest_managed" "fvAEPg" {
@@ -194,6 +243,38 @@ resource "test_assertions" "fvRsBd" {
   }
 }
 
+data "aci_rest_managed" "fvRsTrustCtrl" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/rstrustCtrl"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "fvRsTrustCtrl" {
+  component = "fvRsTrustCtrl"
+
+  equal "tnFhsTrustCtrlPolName" {
+    description = "tnFhsTrustCtrlPolName"
+    got         = data.aci_rest_managed.fvRsTrustCtrl.content.tnFhsTrustCtrlPolName
+    want        = "TRUST_POL"
+  }
+}
+
+data "aci_rest_managed" "tagInst" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/tag-tag1"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "tagInst" {
+  component = "tagInst"
+
+  equal "name" {
+    description = "name"
+    got         = data.aci_rest_managed.tagInst.content.name
+    want        = "tag1"
+  }
+}
+
 data "aci_rest_managed" "fvSubnet" {
   dn = "${data.aci_rest_managed.fvAEPg.id}/subnet-[1.1.1.1/24]"
 
@@ -225,6 +306,118 @@ resource "test_assertions" "fvSubnet" {
     description = "scope"
     got         = data.aci_rest_managed.fvSubnet.content.scope
     want        = "public,shared"
+  }
+}
+
+data "aci_rest_managed" "fvCepNetCfgPol" {
+  dn = "${data.aci_rest_managed.fvSubnet.id}/cepNetCfgPol-POOL1"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "fvCepNetCfgPol" {
+  component = "fvCepNetCfgPol"
+
+  equal "name" {
+    description = "name"
+    got         = data.aci_rest_managed.fvCepNetCfgPol.content.name
+    want        = "POOL1"
+  }
+
+  equal "startIp" {
+    description = "startIp"
+    got         = data.aci_rest_managed.fvCepNetCfgPol.content.startIp
+    want        = "172.16.0.1"
+  }
+
+  equal "endIp" {
+    description = "endIp"
+    got         = data.aci_rest_managed.fvCepNetCfgPol.content.endIp
+    want        = "172.16.0.10"
+  }
+
+  equal "dnsSearchSuffix" {
+    description = "dnsSearchSuffix"
+    got         = data.aci_rest_managed.fvCepNetCfgPol.content.dnsSearchSuffix
+    want        = "cisco"
+  }
+
+  equal "dnsServers" {
+    description = "dnsServers"
+    got         = data.aci_rest_managed.fvCepNetCfgPol.content.dnsServers
+    want        = "dns.cisco.com"
+  }
+
+  equal "dnsSuffix" {
+    description = "dnsSuffix"
+    got         = data.aci_rest_managed.fvCepNetCfgPol.content.dnsSuffix
+    want        = "cisco"
+  }
+
+  equal "winsServers" {
+    description = "winsServers"
+    got         = data.aci_rest_managed.fvCepNetCfgPol.content.winsServers
+    want        = "win"
+  }
+}
+
+data "aci_rest_managed" "ipNexthopEpP" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/subnet-[2.2.2.2/32]/epReach/nh-[192.168.1.1]"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "ipNexthopEpP" {
+  component = "ipNexthopEpP"
+
+  equal "nhAddr" {
+    description = "nhAddr"
+    got         = data.aci_rest_managed.ipNexthopEpP.content.nhAddr
+    want        = "192.168.1.1"
+  }
+}
+
+data "aci_rest_managed" "fvEpAnycast" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/subnet-[3.3.3.3/32]/epAnycast-[00:00:00:01:02:03]"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "fvEpAnycast" {
+  component = "fvEpAnycast"
+
+  equal "mac" {
+    description = "mac"
+    got         = data.aci_rest_managed.fvEpAnycast.content.mac
+    want        = "00:00:00:01:02:03"
+  }
+}
+
+data "aci_rest_managed" "fvEpNlb" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/subnet-[4.4.4.4/32]/epnlb"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "fvEpNlb" {
+  component = "fvEpNlb"
+
+  equal "group" {
+    description = "group"
+    got         = data.aci_rest_managed.fvEpNlb.content.group
+    want        = "230.1.1.1"
+  }
+
+  equal "mac" {
+    description = "mac"
+    got         = data.aci_rest_managed.fvEpNlb.content.mac
+    want        = "00:00:00:00:00:00"
+  }
+
+  equal "mode" {
+    description = "mode"
+    got         = data.aci_rest_managed.fvEpNlb.content.mode
+    want        = "mode-mcast-igmp"
   }
 }
 
@@ -527,5 +720,70 @@ resource "test_assertions" "vmmSecP" {
     description = "macChanges"
     got         = data.aci_rest_managed.vmmSecP.content.macChanges
     want        = "accept"
+  }
+}
+
+data "aci_rest_managed" "fvVip" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/vip-1.2.3.4"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "fvVip" {
+  component = "fvVip"
+
+  equal "addr" {
+    description = "addr"
+    got         = data.aci_rest_managed.fvVip.content.addr
+    want        = "1.2.3.4"
+  }
+  equal "descr" {
+    description = "descr"
+    got         = data.aci_rest_managed.fvVip.content.descr
+    want        = "My Virtual IP"
+  }
+}
+
+
+data "aci_rest_managed" "vnsAddrInst" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/CtrlrAddrInst-POOL1"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "vnsAddrInst" {
+  component = "vnsAddrInst"
+
+  equal "name" {
+    description = "name"
+    got         = data.aci_rest_managed.vnsAddrInst.content.name
+    want        = "POOL1"
+  }
+  equal "addr" {
+    description = "addr"
+    got         = data.aci_rest_managed.vnsAddrInst.content.addr
+    want        = "1.1.1.1/24"
+  }
+}
+
+
+data "aci_rest_managed" "fvnsUcastAddrBlk" {
+  dn = "${data.aci_rest_managed.vnsAddrInst.id}/fromaddr-[1.1.1.10]-toaddr-[1.1.1.100]"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "fvnsUcastAddrBlk" {
+  component = "fvnsUcastAddrBlk"
+
+  equal "from" {
+    description = "from"
+    got         = data.aci_rest_managed.fvnsUcastAddrBlk.content.from
+    want        = "1.1.1.10"
+  }
+  equal "to" {
+    description = "to"
+    got         = data.aci_rest_managed.fvnsUcastAddrBlk.content.to
+    want        = "1.1.1.100"
   }
 }

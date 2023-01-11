@@ -27,11 +27,16 @@ module "aci_endpoint_group" {
   qos_class                   = "level1"
   custom_qos_policy           = "CQP1"
   bridge_domain               = "BD1"
+  trust_control_policy        = "TRUST_POL"
   contract_consumers          = ["CON1"]
   contract_providers          = ["CON1"]
   contract_imported_consumers = ["I_CON1"]
   contract_intra_epgs         = ["CON1"]
   physical_domains            = ["PHY1"]
+  tags = [
+    "tag1",
+    "tag2"
+  ]
   subnets = [{
     description        = "Subnet Description"
     ip                 = "1.1.1.1/24"
@@ -40,7 +45,24 @@ module "aci_endpoint_group" {
     igmp_querier       = true
     nd_ra_prefix       = true
     no_default_gateway = false
-  }]
+    },
+    {
+      ip                 = "2.2.2.2/32"
+      no_default_gateway = true
+      next_hop_ip        = "192.168.1.1"
+    },
+    {
+      ip                 = "3.3.3.3/32"
+      no_default_gateway = true
+      anycast_mac        = "00:00:00:01:02:03"
+    },
+    {
+      ip                 = "4.4.4.4/32"
+      no_default_gateway = true
+      nlb_group          = "230.1.1.1"
+      nlb_mode           = "mode-mcast-igmp"
+    }
+  ]
   vmware_vmm_domains = [{
     name                 = "VMW1"
     u_segmentation       = true
@@ -97,6 +119,20 @@ module "aci_endpoint_group" {
     channel        = "VPC1"
     additional_ips = ["1.1.1.11"]
   }]
+  l4l7_virtual_ips = [
+    {
+      ip          = "1.2.3.4"
+      description = "My Virtual IP"
+    }
+  ]
+  l4l7_address_pools = [
+    {
+      name            = "POOL1"
+      gateway_address = "1.1.1.1/24"
+      from            = "1.1.1.10"
+      to              = "1.1.1.100"
+    }
+  ]
 }
 ```
 <!-- END_TF_DOCS -->

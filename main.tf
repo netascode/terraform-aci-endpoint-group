@@ -8,6 +8,21 @@ locals {
       }
     ]
   ])
+  ip_pools_list = flatten([
+    for subnet in var.subnets : [
+      for pool in lookup(subnet, "ip_pools", []) : {
+        id                = "${subnet.ip}-${pool.name}"
+        subnet_ip         = subnet.ip
+        name              = pool.name
+        start_ip          = pool.start_ip
+        end_ip            = pool.end_ip
+        dns_search_suffix = pool.dns_search_suffix
+        dns_server        = pool.dns_server
+        dns_suffix        = pool.dns_suffix
+        wins_server       = pool.wins_server
+      }
+    ]
+  ])
 }
 
 resource "aci_rest_managed" "fvAEPg" {
@@ -50,6 +65,74 @@ resource "aci_rest_managed" "fvSubnet" {
     descr = each.value.description != null ? each.value.description : ""
     ctrl  = join(",", concat(each.value.nd_ra_prefix == true ? ["nd"] : [], each.value.no_default_gateway == true ? ["no-default-gateway"] : [], each.value.igmp_querier == true ? ["querier"] : []))
     scope = join(",", concat(each.value.public == true ? ["public"] : ["private"], each.value.shared == true ? ["shared"] : []))
+  }
+}
+
+resource "aci_rest_managed" "fvCepNetCfgPol" {
+  for_each   = { for pool in local.ip_pools_list : pool.id => pool }
+  dn         = "${aci_rest_managed.fvSubnet[each.value.subnet_ip].dn}/cepNetCfgPol-${each.value.name}"
+  class_name = "fvCepNetCfgPol"
+  content = {
+    name            = each.value.name
+    startIp         = each.value.start_ip
+    endIp           = each.value.end_ip
+    dnsSearchSuffix = each.value.dns_search_suffix
+    dnsServers      = each.value.dns_server
+    dnsSuffix       = each.value.dns_suffix
+    winsServers     = each.value.wins_server
+  }
+}
+
+resource "aci_rest_managed" "fvEpReachability" {
+  for_each   = { for subnet in var.subnets : subnet.ip => subnet if subnet.next_hop_ip != "" }
+  dn         = "${aci_rest_managed.fvSubnet[each.value.ip].dn}/epReach"
+  class_name = "fvEpReachability"
+}
+
+resource "aci_rest_managed" "ipNexthopEpP" {
+  for_each   = { for subnet in var.subnets : subnet.ip => subnet if subnet.next_hop_ip != "" }
+  dn         = "${aci_rest_managed.fvEpReachability[each.value.ip].dn}/nh-[${each.value.next_hop_ip}]"
+  class_name = "ipNexthopEpP"
+  content = {
+    nhAddr = each.value.next_hop_ip
+  }
+}
+
+resource "aci_rest_managed" "fvEpAnycast" {
+  for_each   = { for subnet in var.subnets : subnet.ip => subnet if subnet.anycast_mac != "" }
+  dn         = "${aci_rest_managed.fvSubnet[each.value.ip].dn}/epAnycast-[${each.value.anycast_mac}]"
+  class_name = "fvEpAnycast"
+  content = {
+    mac = each.value.anycast_mac
+  }
+}
+
+resource "aci_rest_managed" "fvEpNlb" {
+  for_each   = { for subnet in var.subnets : subnet.ip => subnet if subnet.nlb_mode != "" }
+  dn         = "${aci_rest_managed.fvSubnet[each.value.ip].dn}/epnlb"
+  class_name = "fvEpNlb"
+  content = {
+    group = each.value.nlb_group
+    mac   = each.value.nlb_mac
+    mode  = each.value.nlb_mode == "mode-mcast-static" ? "mode-mcast--static" : each.value.nlb_mode
+  }
+}
+
+resource "aci_rest_managed" "tagInst" {
+  for_each   = toset(var.tags)
+  dn         = "${aci_rest_managed.fvAEPg.dn}/tag-${each.value}"
+  class_name = "tagInst"
+  content = {
+    name = each.value
+  }
+}
+
+resource "aci_rest_managed" "fvRsTrustCtrl" {
+  count      = var.trust_control_policy != "" ? 1 : 0
+  dn         = "${aci_rest_managed.fvAEPg.dn}/rstrustCtrl"
+  class_name = "fvRsTrustCtrl"
+  content = {
+    tnFhsTrustCtrlPolName = var.trust_control_policy
   }
 }
 
@@ -227,5 +310,36 @@ resource "aci_rest_managed" "vmmSecP" {
     allowPromiscuous = each.value.allow_promiscuous == true ? "accept" : "reject"
     forgedTransmits  = each.value.forged_transmits == true ? "accept" : "reject"
     macChanges       = each.value.mac_changes == true ? "accept" : "reject"
+  }
+}
+
+
+resource "aci_rest_managed" "fvVip" {
+  for_each   = { for vip in var.l4l7_virtual_ips : vip.ip => vip }
+  dn         = "${aci_rest_managed.fvAEPg.dn}/vip-${each.key}"
+  class_name = "fvVip"
+  content = {
+    addr  = each.value.ip
+    descr = each.value.description
+  }
+}
+
+resource "aci_rest_managed" "vnsAddrInst" {
+  for_each   = { for pool in var.l4l7_address_pools : pool.name => pool }
+  dn         = "${aci_rest_managed.fvAEPg.dn}/CtrlrAddrInst-${each.key}"
+  class_name = "vnsAddrInst"
+  content = {
+    name = each.value.name
+    addr = each.value.gateway_address
+  }
+}
+
+resource "aci_rest_managed" "fvnsUcastAddrBlk" {
+  for_each   = { for pool in var.l4l7_address_pools : pool.name => pool if pool.from != "" && pool.to != "" }
+  dn         = "${aci_rest_managed.vnsAddrInst[each.key].dn}/fromaddr-[${each.value.from}]-toaddr-[${each.value.to}]"
+  class_name = "fvnsUcastAddrBlk"
+  content = {
+    from = each.value.from
+    to   = each.value.to
   }
 }
