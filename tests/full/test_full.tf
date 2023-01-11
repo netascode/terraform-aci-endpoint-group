@@ -352,7 +352,7 @@ resource "test_assertions" "fvEpAnycast" {
   equal "mac" {
     description = "mac"
     got         = data.aci_rest_managed.fvEpAnycast.content.mac
-    want        = "192.168.1.1"
+    want        = "00:00:00:01:02:03"
   }
 }
 
