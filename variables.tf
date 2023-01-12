@@ -411,12 +411,12 @@ variable "static_endpoints" {
     mac            = string
     ip             = optional(string, "0.0.0.0")
     type           = string
-    node_id        = optional(string)
-    node2_id       = optional(string)
-    vlan           = optional(string)
-    pod_id         = optional(string, 1)
-    port           = optional(string)
-    module         = optional(string, 1)
+    node_id        = optional(number)
+    node2_id       = optional(number)
+    vlan           = optional(number)
+    pod_id         = optional(number, 1)
+    port           = optional(number)
+    module         = optional(number, 1)
     channel        = optional(string)
     additional_ips = optional(list(string), [])
   }))
@@ -452,7 +452,7 @@ variable "static_endpoints" {
 
   validation {
     condition = alltrue([
-      for se in var.static_endpoints : (se.node_id >= 1 && se.node_id <= 4000)
+      for se in var.static_endpoints : se.node_id == null || try(se.node_id >= 1 && se.node_id <= 4000, false)
     ])
     error_message = "`node_id`: Minimum value: `1`. Maximum value: `4000`."
   }
@@ -466,7 +466,7 @@ variable "static_endpoints" {
 
   validation {
     condition = alltrue([
-      for se in var.static_endpoints : (se.vlan >= 1 && se.vlan <= 4096)
+      for se in var.static_endpoints : se.vlan == null || try(se.vlan >= 1 && se.vlan <= 4096, false)
     ])
     error_message = "`vlan`: Minimum value: `1`. Maximum value: `4096`."
   }

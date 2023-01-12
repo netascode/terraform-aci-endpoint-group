@@ -1,3 +1,7 @@
+## 0.2.5 (unreleased)
+
+- Fix variable validation of static endpoints
+
 ## 0.2.4
 
 - Add support for tags
