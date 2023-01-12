@@ -1,4 +1,4 @@
-## 0.2.4 (unreleased)
+## 0.2.4
 
 - Add support for tags
 - Add support for trust control policy
