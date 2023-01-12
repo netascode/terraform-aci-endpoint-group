@@ -27,11 +27,16 @@ module "aci_endpoint_group" {
   qos_class                   = "level1"
   custom_qos_policy           = "CQP1"
   bridge_domain               = "BD1"
+  trust_control_policy        = "TRUST_POL"
   contract_consumers          = ["CON1"]
   contract_providers          = ["CON1"]
   contract_imported_consumers = ["I_CON1"]
   contract_intra_epgs         = ["CON1"]
   physical_domains            = ["PHY1"]
+  tags = [
+    "tag1",
+    "tag2"
+  ]
   subnets = [{
     description        = "Subnet Description"
     ip                 = "1.1.1.1/24"
@@ -63,26 +68,6 @@ module "aci_endpoint_group" {
     module               = 1
     deployment_immediacy = "lazy"
     mode                 = "untagged"
-    },
-    {
-      node_id  = 101
-      node2_id = 102
-      fex_id   = 151
-      fex2_id  = 152
-      vlan     = 2
-      channel  = "ipg_vpc_test"
-    },
-    {
-      node_id = 101
-      fex_id  = 151
-      vlan    = 2
-      channel = "ipg_regular-po_test"
-    },
-    {
-      node_id = 101
-      fex_id  = 151
-      port    = 1
-      vlan    = 2
   }]
   static_endpoints = [{
     name           = "EP1"
@@ -96,6 +81,16 @@ module "aci_endpoint_group" {
     pod_id         = 1
     channel        = "VPC1"
     additional_ips = ["1.1.1.11"]
+  }]
+  l4l7_virtual_ips = [{
+    ip          = "1.2.3.4"
+    description = "My Virtual IP"
+  }]
+  l4l7_address_pools = [{
+    name            = "POOL1"
+    gateway_address = "1.1.1.1/24"
+    from            = "1.1.1.10"
+    to              = "1.1.1.100"
   }]
 }
 ```
