@@ -302,6 +302,17 @@ resource "aci_rest_managed" "fvRsDomAtt_vmm" {
   }
 }
 
+resource "aci_rest_managed" "fvUplinkOrderCont" {
+  for_each   = { for vmm_vwm in var.vmware_vmm_domains : vmm_vwm.name => vmm_vwm }
+  dn         = "${aci_rest_managed.fvRsDomAtt_vmm[each.key].dn}/uplinkorder"
+  class_name = "fvUplinkOrderCont"
+
+  content = {
+    active  = each.value.active_uplinks_order
+    standby = each.value.standby_uplinks
+  }
+}
+
 resource "aci_rest_managed" "vmmSecP" {
   for_each   = { for vmm_vwm in var.vmware_vmm_domains : vmm_vwm.name => vmm_vwm }
   dn         = "${aci_rest_managed.fvRsDomAtt_vmm[each.key].dn}/sec"
@@ -313,6 +324,20 @@ resource "aci_rest_managed" "vmmSecP" {
   }
 }
 
+resource "aci_rest_managed" "fvAEPgLagPolAtt" {
+  for_each   = { for vmm_vwm in var.vmware_vmm_domains : vmm_vwm.name => vmm_vwm if vmm_vwm.elag != "" }
+  dn         = "${aci_rest_managed.fvRsDomAtt_vmm[each.key].dn}/epglagpolatt"
+  class_name = "fvAEPgLagPolAtt"
+}
+
+resource "aci_rest_managed" "fvRsVmmVSwitchEnhancedLagPol" {
+  for_each   = { for vmm_vwm in var.vmware_vmm_domains : vmm_vwm.name => vmm_vwm if vmm_vwm.elag != "" }
+  dn         = "${aci_rest_managed.fvAEPgLagPolAtt[each.key].dn}/rsvmmVSwitchEnhancedLagPol"
+  class_name = "fvRsVmmVSwitchEnhancedLagPol"
+  content = {
+    tDn = "uni/vmmp-VMware/dom-${each.value.name}/vswitchpolcont/enlacplagp-${each.value.elag}"
+  }
+}
 
 resource "aci_rest_managed" "fvVip" {
   for_each   = { for vip in var.l4l7_virtual_ips : vip.ip => vip }

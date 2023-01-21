@@ -47,25 +47,26 @@ module "main" {
     "tag1",
     "tag2"
   ]
-  subnets = [{
-    description        = "Subnet Description"
-    ip                 = "1.1.1.1/24"
-    public             = true
-    shared             = true
-    igmp_querier       = true
-    nd_ra_prefix       = true
-    no_default_gateway = false
-    ip_pools = [
-      {
-        name              = "POOL1"
-        start_ip          = "172.16.0.1"
-        end_ip            = "172.16.0.10"
-        dns_server        = "dns.cisco.com"
-        dns_search_suffix = "cisco"
-        dns_suffix        = "cisco"
-        wins_server       = "win"
-      }
-    ]
+  subnets = [
+    {
+      description        = "Subnet Description"
+      ip                 = "1.1.1.1/24"
+      public             = true
+      shared             = true
+      igmp_querier       = true
+      nd_ra_prefix       = true
+      no_default_gateway = false
+      ip_pools = [
+        {
+          name              = "POOL1"
+          start_ip          = "172.16.0.1"
+          end_ip            = "172.16.0.10"
+          dns_server        = "dns.cisco.com"
+          dns_search_suffix = "cisco"
+          dns_suffix        = "cisco"
+          wins_server       = "win"
+        }
+      ]
     },
     {
       ip                 = "2.2.2.2/32"
@@ -84,29 +85,35 @@ module "main" {
       nlb_mode           = "mode-mcast-igmp"
     }
   ]
-  vmware_vmm_domains = [{
-    name                 = "VMW1"
-    u_segmentation       = true
-    delimiter            = "|"
-    primary_vlan         = 123
-    secondary_vlan       = 124
-    netflow              = false
-    deployment_immediacy = "lazy"
-    resolution_immediacy = "lazy"
-    allow_promiscuous    = true
-    forged_transmits     = true
-    mac_changes          = true
-    custom_epg_name      = "custom-epg-name"
-  }]
-  static_ports = [{
-    node_id              = 101
-    vlan                 = 123
-    pod_id               = 1
-    port                 = 10
-    sub_port             = 1
-    module               = 1
-    deployment_immediacy = "lazy"
-    mode                 = "untagged"
+  vmware_vmm_domains = [
+    {
+      name                 = "VMW1"
+      u_segmentation       = true
+      delimiter            = "|"
+      primary_vlan         = 123
+      secondary_vlan       = 124
+      netflow              = false
+      deployment_immediacy = "lazy"
+      resolution_immediacy = "lazy"
+      allow_promiscuous    = true
+      forged_transmits     = true
+      mac_changes          = true
+      custom_epg_name      = "custom-epg-name"
+      elag                 = "ELAG1"
+      active_uplinks_order = "1"
+      standby_uplinks      = "2"
+    }
+  ]
+  static_ports = [
+    {
+      node_id              = 101
+      vlan                 = 123
+      pod_id               = 1
+      port                 = 10
+      sub_port             = 1
+      module               = 1
+      deployment_immediacy = "lazy"
+      mode                 = "untagged"
     },
     {
       node_id  = 101
@@ -127,21 +134,23 @@ module "main" {
       fex_id  = 151
       port    = 1
       vlan    = 2
-  }]
-  static_endpoints = [{
-    name           = "EP1"
-    alias          = "EP1-ALIAS"
-    mac            = "11:11:11:11:11:11"
-    ip             = "1.1.1.10"
-    type           = "silent-host"
-    node_id        = 101
-    node2_id       = 102
-    vlan           = 123
-    pod_id         = 1
-    channel        = "VPC1"
-    additional_ips = ["1.1.1.11"]
-  }]
-
+    }
+  ]
+  static_endpoints = [
+    {
+      name           = "EP1"
+      alias          = "EP1-ALIAS"
+      mac            = "11:11:11:11:11:11"
+      ip             = "1.1.1.10"
+      type           = "silent-host"
+      node_id        = 101
+      node2_id       = 102
+      vlan           = 123
+      pod_id         = 1
+      channel        = "VPC1"
+      additional_ips = ["1.1.1.11"]
+    }
+  ]
   l4l7_virtual_ips = [
     {
       ip          = "1.2.3.4"
@@ -156,7 +165,6 @@ module "main" {
       to              = "1.1.1.100"
     }
   ]
-
 }
 
 data "aci_rest_managed" "fvAEPg" {
@@ -766,7 +774,6 @@ resource "test_assertions" "vnsAddrInst" {
   }
 }
 
-
 data "aci_rest_managed" "fvnsUcastAddrBlk" {
   dn = "${data.aci_rest_managed.vnsAddrInst.id}/fromaddr-[1.1.1.10]-toaddr-[1.1.1.100]"
 
@@ -786,4 +793,43 @@ resource "test_assertions" "fvnsUcastAddrBlk" {
     got         = data.aci_rest_managed.fvnsUcastAddrBlk.content.to
     want        = "1.1.1.100"
   }
+}
+
+data "aci_rest_managed" "fvRsVmmVSwitchEnhancedLagPol" {
+  dn = "${data.aci_rest_managed.fvRsDomAtt_vmm.id}/epglagpolatt/rsvmmVSwitchEnhancedLagPol"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "fvRsVmmVSwitchEnhancedLagPol" {
+  component = "fvRsVmmVSwitchEnhancedLagPol"
+
+  equal "tDn" {
+    description = "tDn"
+    got         = data.aci_rest_managed.fvRsVmmVSwitchEnhancedLagPol.content.tDn
+    want        = "uni/vmmp-VMware/dom-VMW1/vswitchpolcont/enlacplagp-ELAG1"
+  }
+}
+
+data "aci_rest_managed" "fvUplinkOrderCont" {
+  dn = "${data.aci_rest_managed.fvRsDomAtt_vmm.id}/uplinkorder"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "fvUplinkOrderCont" {
+  component = "fvUplinkOrderCont"
+
+  equal "active" {
+    description = "active"
+    got         = data.aci_rest_managed.fvUplinkOrderCont.content.active
+    want        = "1"
+  }
+
+  equal "standby" {
+    description = "standby"
+    got         = data.aci_rest_managed.fvUplinkOrderCont.content.standby
+    want        = "2"
+  }
+
 }

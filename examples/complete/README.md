@@ -45,24 +45,7 @@ module "aci_endpoint_group" {
     igmp_querier       = true
     nd_ra_prefix       = true
     no_default_gateway = false
-    },
-    {
-      ip                 = "2.2.2.2/32"
-      no_default_gateway = true
-      next_hop_ip        = "192.168.1.1"
-    },
-    {
-      ip                 = "3.3.3.3/32"
-      no_default_gateway = true
-      anycast_mac        = "00:00:00:01:02:03"
-    },
-    {
-      ip                 = "4.4.4.4/32"
-      no_default_gateway = true
-      nlb_group          = "230.1.1.1"
-      nlb_mode           = "mode-mcast-igmp"
-    }
-  ]
+  }]
   vmware_vmm_domains = [{
     name                 = "VMW1"
     u_segmentation       = true
@@ -85,26 +68,6 @@ module "aci_endpoint_group" {
     module               = 1
     deployment_immediacy = "lazy"
     mode                 = "untagged"
-    },
-    {
-      node_id  = 101
-      node2_id = 102
-      fex_id   = 151
-      fex2_id  = 152
-      vlan     = 2
-      channel  = "ipg_vpc_test"
-    },
-    {
-      node_id = 101
-      fex_id  = 151
-      vlan    = 2
-      channel = "ipg_regular-po_test"
-    },
-    {
-      node_id = 101
-      fex_id  = 151
-      port    = 1
-      vlan    = 2
   }]
   static_endpoints = [{
     name           = "EP1"
@@ -119,20 +82,16 @@ module "aci_endpoint_group" {
     channel        = "VPC1"
     additional_ips = ["1.1.1.11"]
   }]
-  l4l7_virtual_ips = [
-    {
-      ip          = "1.2.3.4"
-      description = "My Virtual IP"
-    }
-  ]
-  l4l7_address_pools = [
-    {
-      name            = "POOL1"
-      gateway_address = "1.1.1.1/24"
-      from            = "1.1.1.10"
-      to              = "1.1.1.100"
-    }
-  ]
+  l4l7_virtual_ips = [{
+    ip          = "1.2.3.4"
+    description = "My Virtual IP"
+  }]
+  l4l7_address_pools = [{
+    name            = "POOL1"
+    gateway_address = "1.1.1.1/24"
+    from            = "1.1.1.10"
+    to              = "1.1.1.100"
+  }]
 }
 ```
 <!-- END_TF_DOCS -->
