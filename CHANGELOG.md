@@ -1,4 +1,4 @@
-## 0.2.6 (unreleased)
+## 0.2.6
 
 - Add `elag`, `active_uplinks_order` and `standby_uplinks` attributes to VMware VMM domains
 
