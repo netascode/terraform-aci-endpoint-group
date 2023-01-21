@@ -1,3 +1,15 @@
+## 0.2.5
+
+- Fix variable validation of static endpoints
+
+## 0.2.4
+
+- Add support for tags
+- Add support for trust control policy
+- Add support for additional subnet options
+- Add support for L4L7 virtual IPs
+- Add support for L4L7 address pools
+
 ## 0.2.3
 
 - Add support for QoS class
