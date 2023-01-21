@@ -1,3 +1,7 @@
+## 0.2.6 (unreleased)
+
+- Add `elag`, `active_uplinks_order` and `standby_uplinks` attributes to VMware VMM domains
+
 ## 0.2.5
 
 - Fix variable validation of static endpoints
@@ -48,7 +52,7 @@
 
 ## 0.0.3
 
-- Add custom_epg_name variable
+- Add `custom_epg_name` variable
 
 ## 0.0.2
 
