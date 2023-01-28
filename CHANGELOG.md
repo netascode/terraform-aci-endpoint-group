@@ -1,4 +1,4 @@
-## 0.2.7 (unreleased)
+## 0.2.7
 
 - Fix conditional creation of `fvUplinkOrderCont` object
 
