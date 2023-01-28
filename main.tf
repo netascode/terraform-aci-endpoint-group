@@ -303,7 +303,7 @@ resource "aci_rest_managed" "fvRsDomAtt_vmm" {
 }
 
 resource "aci_rest_managed" "fvUplinkOrderCont" {
-  for_each   = { for vmm_vwm in var.vmware_vmm_domains : vmm_vwm.name => vmm_vwm }
+  for_each   = { for vmm_vwm in var.vmware_vmm_domains : vmm_vwm.name => vmm_vwm if vmm_vwm.active_uplinks_order != "" || vmm_vwm.standby_uplinks != "" }
   dn         = "${aci_rest_managed.fvRsDomAtt_vmm[each.key].dn}/uplinkorder"
   class_name = "fvUplinkOrderCont"
 
