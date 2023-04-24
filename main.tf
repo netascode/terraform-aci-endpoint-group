@@ -34,6 +34,7 @@ resource "aci_rest_managed" "fvAEPg" {
     descr        = var.description
     floodOnEncap = var.flood_in_encap == true ? "enabled" : "disabled"
     pcEnfPref    = var.intra_epg_isolation == true ? "enforced" : "unenforced"
+    proxy_arp    = var.proxy_arp ? "proxy-arp" : "none"
     prefGrMemb   = var.preferred_group == true ? "include" : "exclude"
     prio         = var.qos_class
   }
