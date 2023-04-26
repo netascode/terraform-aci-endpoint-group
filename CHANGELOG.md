@@ -1,3 +1,7 @@
+## 0.2.8 (unreleased)
+
+- Add `proxy_arp` variable
+
 ## 0.2.7
 
 - Fix conditional creation of `fvUplinkOrderCont` object

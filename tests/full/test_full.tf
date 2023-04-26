@@ -33,6 +33,7 @@ module "main" {
   description                 = "My Description"
   flood_in_encap              = false
   intra_epg_isolation         = true
+  proxy_arp                   = true
   preferred_group             = true
   qos_class                   = "level1"
   custom_qos_policy           = "CQP1"
@@ -204,6 +205,12 @@ resource "test_assertions" "fvAEPg" {
     description = "pcEnfPref"
     got         = data.aci_rest_managed.fvAEPg.content.pcEnfPref
     want        = "enforced"
+  }
+
+  equal "fwdCtrl" {
+    description = "fwdCtrl"
+    got         = data.aci_rest_managed.fvAEPg.content.fwdCtrl
+    want        = "proxy-arp"
   }
 
   equal "prefGrMemb" {
