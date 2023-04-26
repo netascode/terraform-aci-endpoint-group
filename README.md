@@ -118,6 +118,7 @@ module "aci_endpoint_group" {
 | <a name="input_description"></a> [description](#input\_description) | Description. | `string` | `""` | no |
 | <a name="input_flood_in_encap"></a> [flood\_in\_encap](#input\_flood\_in\_encap) | Flood in encapsulation. | `bool` | `false` | no |
 | <a name="input_intra_epg_isolation"></a> [intra\_epg\_isolation](#input\_intra\_epg\_isolation) | Intra EPG isolation. | `bool` | `false` | no |
+| <a name="input_proxy_arp"></a> [proxy\_arp](#input\_proxy\_arp) | Proxy-ARP | `bool` | `false` | no |
 | <a name="input_preferred_group"></a> [preferred\_group](#input\_preferred\_group) | Preferred group membership. | `bool` | `false` | no |
 | <a name="input_qos_class"></a> [qos\_class](#input\_qos\_class) | QoS class. | `string` | `"unspecified"` | no |
 | <a name="input_custom_qos_policy"></a> [custom\_qos\_policy](#input\_custom\_qos\_policy) | Custom QoS policy name. | `string` | `""` | no |

@@ -62,6 +62,12 @@ variable "intra_epg_isolation" {
   default     = false
 }
 
+variable "proxy_arp" {
+  description = "Proxy-ARP"
+  type        = bool
+  default     = false
+}
+
 variable "preferred_group" {
   description = "Preferred group membership."
   type        = bool
