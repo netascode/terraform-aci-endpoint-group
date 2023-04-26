@@ -1,4 +1,4 @@
-## 0.2.8 (unreleased)
+## 0.2.8
 
 - Add `proxy_arp` variable
 
