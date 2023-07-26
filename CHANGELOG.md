@@ -1,3 +1,7 @@
+## 0.2.9 (unreleased)
+
+- Fix keys for static path bindings
+
 ## 0.2.8
 
 - Add `proxy_arp` variable
