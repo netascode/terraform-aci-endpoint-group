@@ -1,4 +1,4 @@
-## 0.2.9 (unreleased)
+## 0.2.9
 
 - Fix keys for static path bindings
 
