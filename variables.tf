@@ -318,7 +318,7 @@ variable "vmware_vmm_domains" {
 }
 
 variable "static_leafs" {
-  description = "List of static leaf switches. Allowed values `pod_id`: `1` - `255`. Default value `pod_id`: `1`. Allowed values `node_id`: `1` - `4000`. Allowed values `vlan`: `1` - `4096`. Choices `mode`: `regular`, `native`, `untagged`. Default value `mode`: `regular`. Choices `deployment_immediacy`: `immediate`, `lazy`. Default value `deployment_immediacy`: `imediate`"
+  description = "List of static leaf switches. Allowed values `pod_id`: `1` - `255`. Default value `pod_id`: `1`. Allowed values `node_id`: `1` - `4000`. Allowed values `vlan`: `1` - `4096`. Choices `mode`: `regular`, `native`, `untagged`. Default value `mode`: `regular`. Choices `deployment_immediacy`: `immediate`, `lazy`. Default value `deployment_immediacy`: `immediate`"
   type = list(object({
     pod_id               = optional(number, 1)
     node_id              = number
