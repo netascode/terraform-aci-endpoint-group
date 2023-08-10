@@ -317,6 +317,54 @@ variable "vmware_vmm_domains" {
 
 }
 
+variable "static_leafs" {
+  description = "List of static leaf switches. Allowed values `node_id`: `1` - `4000`. Allowed values `vlan`: `1` - `4096`. Choices `mode`: `regular`, `native`, `untagged`. Default value `mode`: `regular`."
+  type = list(object({
+    pod_id               = optional(number, 1)
+    node_id              = number
+    vlan                 = number
+    mode                 = optional(string, "regular")
+    deployment_immediacy = optional(string, "immediate")
+  }))
+  default = []
+
+
+  validation {
+    condition = alltrue([
+      for sp in var.static_leafs : sp.pod_id == null || try(sp.pod_id >= 1 && sp.pod_id <= 255, false)
+    ])
+    error_message = "`pod_id`: Minimum value: `1`. Maximum value: `255`."
+  }
+
+  validation {
+    condition = alltrue([
+      for sp in var.static_leafs : (sp.node_id >= 1 && sp.node_id <= 4000)
+    ])
+    error_message = "`node_id`: Minimum value: `1`. Maximum value: `4000`."
+  }
+
+  validation {
+    condition = alltrue([
+      for sp in var.static_leafs : (sp.vlan >= 1 && sp.vlan <= 4096)
+    ])
+    error_message = "`vlan`: Minimum value: `1`. Maximum value: `4096`."
+  }
+
+  validation {
+    condition = alltrue([
+      for sp in var.static_leafs : sp.mode == null || try(contains(["regular", "native", "untagged"], sp.mode), false)
+    ])
+    error_message = "`mode`: Allowed values are `regular`, `native` or `untagged`."
+  }
+
+  validation {
+    condition = alltrue([
+      for sp in var.static_leafs : sp.deployment_immediacy == null || try(contains(["immediate", "lazy"], sp.deployment_immediacy), false)
+    ])
+    error_message = "`deployment_immediacy`: Allowed values are `immediate` or `lazy`."
+  }
+}
+
 variable "static_ports" {
   description = "List of static ports. Allowed values `node_id`, `node2_id`: `1` - `4000`. Allowed values `fex_id`, `fex2_id`: `101` - `199`. Allowed values `vlan`: `1` - `4096`. Allowed values `pod_id`: `1` - `255`. Default value `pod_id`: `1`. Allowed values `port`: `1` - `127`. Allowed values `sub_port`: `1` - `16`. Allowed values `module`: `1` - `9`. Default value `module`: `1`. Choices `deployment_immediacy`: `immediate`, `lazy`. Default value `deployment_immediacy`: `lazy`. Choices `mode`: `regular`, `native`, `untagged`. Default value `mode`: `regular`."
   type = list(object({
@@ -334,6 +382,7 @@ variable "static_ports" {
     mode                 = optional(string, "regular")
   }))
   default = []
+
 
   validation {
     condition = alltrue([
