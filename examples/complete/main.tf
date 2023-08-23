@@ -22,7 +22,7 @@ module "aci_endpoint_group" {
     endpoint_group      = "EPG2"
     application_profile = "AP1"
   }]
-  physical_domains            = ["PHY1"]
+  physical_domains = ["PHY1"]
   tags = [
     "tag1",
     "tag2"
