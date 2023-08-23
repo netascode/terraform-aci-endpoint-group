@@ -182,6 +182,29 @@ variable "contract_intra_epgs" {
   }
 }
 
+variable "contract_masters" {
+  description = "List of EPG contract masters."
+  type = list(object({
+    endpoint_group      = string
+    application_profile = string
+  }))
+  default = []
+
+  validation {
+    condition = alltrue([
+      for master in var.contract_masters : can(regex("^[a-zA-Z0-9_.-]{0,64}$", master.endpoint_group))
+    ])
+    error_message = "Allowed characters: `a`-`z`, `A`-`Z`, `0`-`9`, `_`, `.`, `-`. Maximum characters: 64."
+  }
+
+  validation {
+    condition = alltrue([
+      for master in var.contract_masters : can(regex("^[a-zA-Z0-9_.-]{0,64}$", master.application_profile))
+    ])
+    error_message = "Allowed characters: `a`-`z`, `A`-`Z`, `0`-`9`, `_`, `.`, `-`. Maximum characters: 64."
+  }
+}
+
 variable "physical_domains" {
   description = "List of physical domains."
   type        = list(string)
