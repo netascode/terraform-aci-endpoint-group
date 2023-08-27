@@ -137,6 +137,14 @@ module "main" {
       vlan    = 2
     }
   ]
+  static_leafs = [
+    {
+      node_id              = 102
+      vlan                 = 124
+      deployment_immediacy = "lazy"
+      mode                 = "untagged"
+    }
+  ]
   static_endpoints = [
     {
       name           = "EP1"
@@ -546,6 +554,40 @@ resource "test_assertions" "fvRsPathAtt" {
   equal "instrImedcy" {
     description = "instrImedcy"
     got         = data.aci_rest_managed.fvRsPathAtt.content.instrImedcy
+    want        = "lazy"
+  }
+}
+
+data "aci_rest_managed" "fvRsNodeAtt" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/rsnodeAtt-[topology/pod-1/node-102]"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "fvRsNodeAtt" {
+  component = "fvRsNodeAtt"
+
+  equal "tDn" {
+    description = "tDn"
+    got         = data.aci_rest_managed.fvRsNodeAtt.content.tDn
+    want        = "topology/pod-1/node-102"
+  }
+
+  equal "encap" {
+    description = "encap"
+    got         = data.aci_rest_managed.fvRsNodeAtt.content.encap
+    want        = "vlan-124"
+  }
+
+  equal "mode" {
+    description = "mode"
+    got         = data.aci_rest_managed.fvRsNodeAtt.content.mode
+    want        = "untagged"
+  }
+
+  equal "instrImedcy" {
+    description = "instrImedcy"
+    got         = data.aci_rest_managed.fvRsNodeAtt.content.instrImedcy
     want        = "lazy"
   }
 }

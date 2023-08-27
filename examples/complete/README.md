@@ -14,7 +14,7 @@ Note that this example will create resources. Resources can be destroyed with `t
 ```hcl
 module "aci_endpoint_group" {
   source  = "netascode/endpoint-group/aci"
-  version = ">= 0.2.2"
+  version = ">= 0.2.10"
 
   tenant                      = "ABC"
   application_profile         = "AP1"
@@ -66,6 +66,12 @@ module "aci_endpoint_group" {
     port                 = 10
     sub_port             = 1
     module               = 1
+    deployment_immediacy = "lazy"
+    mode                 = "untagged"
+  }]
+  static_leafs = [{
+    node_id              = 102
+    vlan                 = 124
     deployment_immediacy = "lazy"
     mode                 = "untagged"
   }]
