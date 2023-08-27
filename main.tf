@@ -182,6 +182,18 @@ resource "aci_rest_managed" "fvRsDomAtt" {
   }
 }
 
+resource "aci_rest_managed" "fvRsNodeAtt" {
+  for_each   = { for sp in var.static_leafs : "${sp.node_id}-vl-${sp.vlan}" => sp }
+  dn         = "${aci_rest_managed.fvAEPg.dn}/rsnodeAtt-[${format("topology/pod-%s/node-%s", each.value.pod_id, each.value.node_id)}]"
+  class_name = "fvRsNodeAtt"
+  content = {
+    tDn         = format("topology/pod-%s/node-%s", each.value.pod_id, each.value.node_id)
+    encap       = "vlan-${each.value.vlan}"
+    mode        = each.value.mode
+    instrImedcy = each.value.deployment_immediacy
+  }
+}
+
 resource "aci_rest_managed" "fvRsPathAtt_port" {
   for_each   = { for sp in var.static_ports : "${sp.node_id}-${sp.module}-${sp.port}-vl-${sp.vlan}" => sp if sp.channel == null && sp.fex_id == null && sp.sub_port == null }
   dn         = "${aci_rest_managed.fvAEPg.dn}/rspathAtt-[${format("topology/pod-%s/paths-%s/pathep-[eth%s/%s]", each.value.pod_id, each.value.node_id, each.value.module, each.value.port)}]"
