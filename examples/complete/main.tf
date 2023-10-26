@@ -18,7 +18,11 @@ module "aci_endpoint_group" {
   contract_providers          = ["CON1"]
   contract_imported_consumers = ["I_CON1"]
   contract_intra_epgs         = ["CON1"]
-  physical_domains            = ["PHY1"]
+  contract_masters = [{
+    endpoint_group      = "EPG2"
+    application_profile = "AP1"
+  }]
+  physical_domains = ["PHY1"]
   tags = [
     "tag1",
     "tag2"

@@ -508,6 +508,27 @@ resource "test_assertions" "fvRsIntraEpg" {
   }
 }
 
+data "aci_rest_managed" "fvRsSecInherited" {
+  dn = "${data.aci_rest_managed.fvAEPg.id}/rssecInherited-[uni/tn-TF/ap-AP1/epg-EPG1]"
+
+  depends_on = [module.main]
+}
+
+resource "test_assertions" "fvRsSecInherited" {
+  component = "fvRsSecInherited"
+
+  equal "endpoint_group" {
+    description = "endpoint_group"
+    got         = data.aci_rest_managed.fvRsSecInherited.content.endpoint_group
+    want        = "EPG2"
+  }
+  equal "application_profile" {
+    description = "application_profile"
+    got         = data.aci_rest_managed.fvRsSecInherited.content.application_profile
+    want        = "AP1"
+  }
+}
+
 data "aci_rest_managed" "fvRsDomAtt" {
   dn = "${data.aci_rest_managed.fvAEPg.id}/rsdomAtt-[uni/phys-PHY1]"
 
