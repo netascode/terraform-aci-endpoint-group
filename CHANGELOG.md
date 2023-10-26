@@ -1,4 +1,4 @@
-## 0.2.11 (unreleased)
+## 0.2.11
 
 - Add support for contract masters
 - Make `name` attribute of static endpoints optional
