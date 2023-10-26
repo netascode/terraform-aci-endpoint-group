@@ -1,6 +1,7 @@
 ## 0.2.11 (unreleased)
 
 - Add support for contract masters
+- Make `name` attribute of static endpoints optional
 
 ## 0.2.10
 
