@@ -186,7 +186,7 @@ variable "contract_masters" {
   description = "List of EPG contract masters."
   type = list(object({
     endpoint_group      = string
-    application_profile = string
+    application_profile = optional(string, "")
   }))
   default = []
 

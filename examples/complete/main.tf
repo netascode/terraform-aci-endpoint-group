@@ -1,6 +1,6 @@
 module "aci_endpoint_group" {
   source  = "netascode/endpoint-group/aci"
-  version = ">= 0.2.10"
+  version = ">= 0.2.11"
 
   tenant                      = "ABC"
   application_profile         = "AP1"

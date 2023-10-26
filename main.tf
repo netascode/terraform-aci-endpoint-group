@@ -175,10 +175,10 @@ resource "aci_rest_managed" "fvRsIntraEpg" {
 
 resource "aci_rest_managed" "fvRsSecInherited" {
   for_each   = { for master in var.contract_masters : master.endpoint_group => master }
-  dn         = "${aci_rest_managed.fvAEPg.dn}/rssecInherited-[uni/tn-${var.tenant}/ap-${each.value.application_profile}/epg-${each.value.endpoint_group}]"
+  dn         = "${aci_rest_managed.fvAEPg.dn}/rssecInherited-[uni/tn-${var.tenant}/ap-${try(each.value.application_profile, var.application_profile)}/epg-${each.value.endpoint_group}]"
   class_name = "fvRsSecInherited"
   content = {
-    tDn = "uni/tn-${var.tenant}/ap-${each.value.application_profile}/epg-${each.value.endpoint_group}"
+    tDn = "uni/tn-${var.tenant}/ap-${try(each.value.application_profile, var.application_profile)}/epg-${each.value.endpoint_group}"
   }
 }
 

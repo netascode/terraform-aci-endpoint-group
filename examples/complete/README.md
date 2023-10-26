@@ -14,7 +14,7 @@ Note that this example will create resources. Resources can be destroyed with `t
 ```hcl
 module "aci_endpoint_group" {
   source  = "netascode/endpoint-group/aci"
-  version = ">= 0.2.10"
+  version = ">= 0.2.11"
 
   tenant                      = "ABC"
   application_profile         = "AP1"
