@@ -495,7 +495,7 @@ variable "static_ports" {
 variable "static_endpoints" {
   description = "List of static endpoints. Format `mac`: `12:34:56:78:9A:BC`. Choices `type`: `silent-host`, `tep`, `vep`. Allowed values `node_id`, `node2_id`: `1` - `4000`. Allowed values `vlan`: `1` - `4096`. Allowed values `pod_id`: `1` - `255`. Default value `pod_id`: `1`. Allowed values `port`: `1` - `127`. Allowed values `module`: `1` - `9`. Default value `module`: `1`."
   type = list(object({
-    name           = string
+    name           = optional(string, "")
     alias          = optional(string, "")
     mac            = string
     ip             = optional(string, "0.0.0.0")
